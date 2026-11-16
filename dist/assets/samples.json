@@ -1,0 +1,650 @@
+[
+  {
+    "id": "colon-budding-transparent-real-1",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-budding-transparent-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-real-2",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-budding-transparent-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-real-3",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-budding-transparent-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-real-4",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-budding-transparent-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-virtual-1",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-transparent-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-virtual-2",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-transparent-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-virtual-3",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-transparent-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-transparent-virtual-4",
+    "lineage": "colon",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-transparent-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-real-1",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-budding-opaque-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-real-2",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-budding-opaque-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-real-3",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-budding-opaque-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-real-4",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-budding-opaque-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-virtual-1",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-opaque-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-virtual-2",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-opaque-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-virtual-3",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-opaque-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-budding-opaque-virtual-4",
+    "lineage": "colon",
+    "subtype": "budding-opaque",
+    "label": "出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-budding-opaque-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-1",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-2",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-3",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-4",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-1",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-2",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-3",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-4",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-real-1",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-opaque-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-real-2",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-opaque-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-real-3",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-opaque-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-real-4",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-opaque-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-virtual-1",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-opaque-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-virtual-2",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-opaque-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-virtual-3",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-opaque-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-opaque-virtual-4",
+    "lineage": "colon",
+    "subtype": "non-budding-opaque",
+    "label": "无出芽 · 不透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-opaque-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-real-1",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "real",
+    "image": "assets/stomach-apoptotic-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-real-2",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "real",
+    "image": "assets/stomach-apoptotic-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-real-3",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "real",
+    "image": "assets/stomach-apoptotic-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-real-4",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "real",
+    "image": "assets/stomach-apoptotic-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-virtual-1",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "virtual",
+    "image": "assets/stomach-apoptotic-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-virtual-2",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "virtual",
+    "image": "assets/stomach-apoptotic-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-virtual-3",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "virtual",
+    "image": "assets/stomach-apoptotic-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-apoptotic-virtual-4",
+    "lineage": "stomach",
+    "subtype": "apoptotic",
+    "label": "凋亡型",
+    "kind": "virtual",
+    "image": "assets/stomach-apoptotic-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-real-1",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "real",
+    "image": "assets/stomach-hollow-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-real-2",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "real",
+    "image": "assets/stomach-hollow-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-real-3",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "real",
+    "image": "assets/stomach-hollow-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-real-4",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "real",
+    "image": "assets/stomach-hollow-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-virtual-1",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "virtual",
+    "image": "assets/stomach-hollow-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-virtual-2",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "virtual",
+    "image": "assets/stomach-hollow-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-virtual-3",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "virtual",
+    "image": "assets/stomach-hollow-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-hollow-virtual-4",
+    "lineage": "stomach",
+    "subtype": "hollow",
+    "label": "空心型",
+    "kind": "virtual",
+    "image": "assets/stomach-hollow-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-real-1",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "real",
+    "image": "assets/stomach-solid-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-real-2",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "real",
+    "image": "assets/stomach-solid-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-real-3",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "real",
+    "image": "assets/stomach-solid-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-real-4",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "real",
+    "image": "assets/stomach-solid-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-virtual-1",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "virtual",
+    "image": "assets/stomach-solid-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-virtual-2",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "virtual",
+    "image": "assets/stomach-solid-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-virtual-3",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "virtual",
+    "image": "assets/stomach-solid-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "stomach-solid-virtual-4",
+    "lineage": "stomach",
+    "subtype": "solid",
+    "label": "实心型",
+    "kind": "virtual",
+    "image": "assets/stomach-solid-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-real-1",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "real",
+    "image": "assets/lung-lumen-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-real-2",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "real",
+    "image": "assets/lung-lumen-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-real-3",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "real",
+    "image": "assets/lung-lumen-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-real-4",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "real",
+    "image": "assets/lung-lumen-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-virtual-1",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "virtual",
+    "image": "assets/lung-lumen-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-virtual-2",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "virtual",
+    "image": "assets/lung-lumen-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-virtual-3",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "virtual",
+    "image": "assets/lung-lumen-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-lumen-virtual-4",
+    "lineage": "lung",
+    "subtype": "lumen",
+    "label": "有腔型",
+    "kind": "virtual",
+    "image": "assets/lung-lumen-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-real-1",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "real",
+    "image": "assets/lung-non-lumen-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-real-2",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "real",
+    "image": "assets/lung-non-lumen-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-real-3",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "real",
+    "image": "assets/lung-non-lumen-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-real-4",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "real",
+    "image": "assets/lung-non-lumen-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-virtual-1",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "virtual",
+    "image": "assets/lung-non-lumen-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-virtual-2",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "virtual",
+    "image": "assets/lung-non-lumen-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-virtual-3",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "virtual",
+    "image": "assets/lung-non-lumen-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "lung-non-lumen-virtual-4",
+    "lineage": "lung",
+    "subtype": "non-lumen",
+    "label": "无腔型",
+    "kind": "virtual",
+    "image": "assets/lung-non-lumen-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  }
+]
