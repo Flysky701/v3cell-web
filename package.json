@@ -4,7 +4,7 @@
   "private": true,
   "description": "V3Cell research website and interactive manuscript figure explorer",
   "scripts": {
-    "check": "node --check dist/app.js && node --check dist/i18n.js && node --check dist/structure-model.js && node --check dist/organoid-viewer.js && node --check dist/data.js && node --check dist/evidence.js && node --check dist/lab.js && python scripts/check.py",
+    "check": "node --check dist/app.js && node --check dist/i18n.js && node --check dist/structure-model.js && node --check dist/organoid-viewer.js && node --check dist/data.js && node --check dist/evidence.js && node --check dist/lab.js && node --check dist/local-model.js && python scripts/check.py",
     "serve": "python3 -m http.server 3000 --directory dist"
   }
 }

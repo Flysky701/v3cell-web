@@ -1,4 +1,5 @@
 """Verify the manuscript explorer's asset inventory and provenance."""
+import ast
 import json
 import re
 from collections import Counter
@@ -33,5 +34,6 @@ for path in re.findall(r'(?:src|href)="([^"#]+)"', html):
     if not path.startswith(("https:", "http:")):
         assert (root / path).exists(), path
 assert "live_inference:false" in (root / "app.js").read_text(encoding="utf-8")
+ast.parse((root / "local-runner.py").read_text(encoding="utf-8"))
 print("PASS: 72 static ROIs, 21 trajectory frames, 5 figures, 23 panels, "
       "7 source pages, local references and replay provenance.")

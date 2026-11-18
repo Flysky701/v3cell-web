@@ -261,6 +261,7 @@ function route() {
   }
   clearToast();
   const previousPage = page;
+  if (previousPage === 'workbench' && path !== 'workbench') clearLocalModel();
   stopPlayback();
   if (previousPage !== path) clearUploads();
   disposeHomeStory?.();

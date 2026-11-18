@@ -1,13 +1,13 @@
 'use strict';
 
-const labModes = ['dynamics','attribution','architecture'];
-const labLabels = ['studioDynamics','studioAttribution','studioArchitecture'];
+const labModes = ['dynamics','attribution','architecture','local'];
+const labLabels = ['studioDynamics','studioAttribution','studioArchitecture','studioLocal'];
 let labTab = 'dynamics', condition = 'ehdpp', activeModule = 'generator', labSubtype = 'budding-opaque';
 let uploadedNames = [];
 
 function workbench() {
   return `<section class="wrap page-intro workbench-intro">${eye('workbenchSection')}<h1>${msg('labTitleNew')}</h1>
-    <div class="intro-row"><p>${msg('workbenchLead')}</p><div class="lab-intro-actions"><span class="pill">${msg('replayOnly')}</span><button class="chip" id="how-to">${msg('howTo')} ?</button></div></div></section>
+    <div class="intro-row"><p>${msg('workbenchLead')}</p><div class="lab-intro-actions"><button class="chip" id="how-to">${msg('howTo')} ?</button></div></div></section>
     <section class="wrap lab-shell"><nav class="lab-modes" data-i18n-label="workbench">${labModes.map((id,i) =>
       `<a href="#workbench?tab=${id}" data-lab-mode="${id}">${msg(labLabels[i])}</a>`).join('')}</nav><div id="lab-host"></div></section>`;
 }
@@ -21,6 +21,7 @@ function renderLab() {
   }
   if (labTab === 'attribution') { renderAttribution(); return; }
   if (labTab === 'architecture') { renderArchitecture(); return; }
+  if (labTab === 'local') { renderLocalModel(host); return; }
   host.innerHTML = trajectoryWorkspace();
   localize(host);
   const preview = document.getElementById('upload-preview');
@@ -111,7 +112,7 @@ function handleLabClick(target) {
   const b = target.closest('button');
   if (!b) return false;
   if (b.id === 'how-to') {
-    openInspection(t('howTo'),`<ol class="guide"><li><b>${t('studioDynamics')}</b><p>${bi('切换发育命运并拖动时间滑块或自动播放，图 5C（命运概率）与图 5G（形态动力学）上的游标将与当前培养时点实时联动；开启「三命运并排对比」可在同一时点横向对照三类结局，也可将当前检视状态导出为 JSON 记录。','Select a developmental fate and scrub or play across 48–96 h; time cursors move synchronously along the Fig. 5C (fate probability) and Fig. 5G (morphodynamics) curves. Toggle side-by-side comparison to inspect all three outcomes at the same culture hour, or export the current view metadata as JSON.')}</p></li><li><b>${t('studioAttribution')}</b><p>${bi('在 EHDPP、IDDPP 与 RGD 三种化学扰动间切换，点击任意通道可放大检视明场、Grad-CAM 与 p-MLC-II / DAPI 免疫荧光的空间共定位，并结合图 5F 查阅三个解剖区域的 nEF 定量分布。','Switch among EHDPP, IDDPP, and RGD perturbations and click any channel to enlarge brightfield, Grad-CAM, and p-MLC-II / DAPI immunofluorescence, alongside the regional nEF distributions in Fig. 5F.')}</p></li><li><b>${t('studioArchitecture')}</b><p>${bi('点击六个模型组件查阅阶段 1 与阶段 2 的潜空间维度、掩码加权与损失项权重，或在下方快速切换九种静态类器官亚型的真实与虚拟样本。','Select any of the six architecture modules to review latent dimensions, foreground mask weighting, and loss terms across Stages 1 and 2, or switch among the nine static subtypes below.')}</p></li></ol>`);
+    openInspection(t('howTo'),`<ol class="guide"><li><b>${t('studioDynamics')}</b><p>${bi('切换发育命运并拖动时间滑块或自动播放，图 5C（命运概率）与图 5G（形态动力学）上的游标将与当前培养时点实时联动；开启「三命运并排对比」可在同一时点横向对照三类结局，也可将当前检视状态导出为 JSON 记录。','Select a developmental fate and scrub or play across 48–96 h; time cursors move synchronously along the Fig. 5C (fate probability) and Fig. 5G (morphodynamics) curves. Toggle side-by-side comparison to inspect all three outcomes at the same culture hour, or export the current view metadata as JSON.')}</p></li><li><b>${t('studioAttribution')}</b><p>${bi('在 EHDPP、IDDPP 与 RGD 三种化学扰动间切换，点击任意通道可放大检视明场、Grad-CAM 与 p-MLC-II / DAPI 免疫荧光的空间共定位，并结合图 5F 查阅三个解剖区域的 nEF 定量分布。','Switch among EHDPP, IDDPP, and RGD perturbations and click any channel to enlarge brightfield, Grad-CAM, and p-MLC-II / DAPI immunofluorescence, alongside the regional nEF distributions in Fig. 5F.')}</p></li><li><b>${t('studioArchitecture')}</b><p>${bi('点击六个模型组件查阅阶段 1 与阶段 2 的潜空间维度、掩码加权与损失项权重，或在下方快速切换九种静态类器官亚型的真实与虚拟样本。','Select any of the six architecture modules to review latent dimensions, foreground mask weighting, and loss terms across Stages 1 and 2, or switch among the nine static subtypes below.')}</p></li><li><b>${t('studioLocal')}</b><p>${bi('复制提示词配置本机运行器，连接后选取 6 张按时间排列的明场图像并指定命运条件。可保存本机生成的 GIF 和运行记录。','Copy the prompt to set up the local runner, connect, then select six chronological brightfield frames and a fate condition. Save the generated GIF and run record.')}</p></li></ol>`);
     return true;
   }
   if (b.dataset.condition) { condition = b.dataset.condition; renderAttribution(); main.querySelector(`[data-condition="${condition}"]`).focus({preventScroll:true}); return true; }
