@@ -2,17 +2,15 @@
 
 // One closed, textured surface per form. Opening a longitude sector exposes the
 // inner wall and the two cut faces. All pigments and geometry are illustrative.
-function createOrganoidStructure(onMaterialReady) {
-  const longitudes = 104, latitudes = 52;
+function createOrganoidStructure(onMaterialReady, longitudes = 104) {
+  const latitudes = longitudes/2;
   const tau = 2*Math.PI, seam = .115;
   const shell = [], lumen = [], walls = [[],[]];
   // A shallow bevel at either edge lets the cut catch light as the model turns.
   const wallBands = [0,.035,.09,.20,.50,.80,.91,.965,1];
   const skin = 0, cavity = 1, tissue = 2;
-  const renderer = createTissuePainter(() => { poseDirty=true; onMaterialReady(); });
-  let selected = 2, shapeStart = -Infinity, previous = [0,0,1,0];
-  let weights = [...previous], poseDirty = true;
-  let cutTarget = 1, cutFrom = 1, cutStart = -Infinity, opening = 1;
+  let lastWeights = [], lastDetail = -1;
+  const renderer = createTissuePainter(() => { lastWeights=[]; onMaterialReady(); });
 
   // Lobes join the same surface as the body, including at their necks.
   const buds = [
@@ -98,32 +96,26 @@ function createOrganoidStructure(onMaterialReady) {
   for (const wall of walls) {
     for (let row=0;row<=latitudes;row++) wall.push(wallBands.map(()=>({})));
   }
-
-  const ease = t => t*t*(3-2*t);
-  function select(index,now) {
-    if (index===selected) return;
-    previous = [...weights];
-    selected=index;
-    shapeStart=now;
-    poseDirty=true;
-  }
-
-  function draw(ctx,width,height,view) {
-    const {yaw,pitch,zoom,cutaway,now,reduced} = view;
-    const shapeTime = reduced?1:Math.max(0,Math.min(1,(now-shapeStart)/620));
-    const blend = ease(shapeTime);
-    if (poseDirty) {
-      weights = previous.map((from,i)=>from*(1-blend)+(i===selected?blend:0));
+  const budTips=buds.map(bud=>{
+    const row=Math.round(Math.acos(bud.y)*latitudes/Math.PI);
+    let best=0, score=-Infinity;
+    for (let col=0;col<longitudes;col++) {
+      const angle=sectionAngle(col/longitudes,row*Math.PI/latitudes);
+      const alignment=bud.x*Math.sin(angle)+bud.z*Math.cos(angle);
+      if (alignment>score) { best=col; score=alignment; }
     }
-    if (cutTarget!==Number(cutaway)) {
-      cutFrom=opening; cutTarget=Number(cutaway); cutStart=now;
-    }
-    const cutTime = reduced?1:Math.max(0,Math.min(1,(now-cutStart)/440));
-    opening = cutFrom+(cutTarget-cutFrom)*ease(cutTime);
+    return {col:best,row};
+  });
+
+  // Each instance is composited from a tightly cropped tile, with its own depth buffer.
+  function draw(ctx,{x,y,radius,yaw,pitch,weights,opening,detail=1,showNotes=false,form=0}) {
+    if (radius<1) return [];
+    const poseDirty = detail!==lastDetail || weights.some((value,i)=>value!==lastWeights[i]);
+    lastWeights=weights; lastDetail=detail;
     const gap = Math.round(longitudes*.282*opening);
-    const density = renderer.begin(width,height,ctx.getTransform().a);
-    const scale = Math.min(width*.313,height*.402)*zoom*density;
-    const cx=width*.457*density, cy=height*.545*density;
+    const size=32*Math.ceil(radius*2.8/32);
+    const density = renderer.begin(size,size,ctx.getTransform().a,detail);
+    const scale = radius*density, cx=size*.5*density, cy=cx;
     const cosY=Math.cos(yaw), sinY=Math.sin(yaw), cosP=Math.cos(pitch), sinP=Math.sin(pitch);
     const roll=-.22, cr=Math.cos(roll), sr=Math.sin(roll);
     const xx=cr*cosY+sr*sinP*sinY, xy=-sr*cosP, xz=-cr*sinY+sr*sinP*cosY;
@@ -142,7 +134,7 @@ function createOrganoidStructure(onMaterialReady) {
         }
         const normalLength=Math.hypot(p[3],p[4],p[5]) || 1;
         for (let axis=3;axis<6;axis++) p[axis]/=normalLength;
-        const relief=renderer.relief(v.u,v.v)*(inside?-.24*(weights[2]+weights[3]):1);
+        const relief=detail*renderer.relief(v.u,v.v)*(inside?-.24*(weights[2]+weights[3]):1);
         for (let axis=0;axis<3;axis++) p[axis]+=relief*p[axis+3];
         // Project the texture axes onto the posed surface, including the shoulders of buds.
         const dot=v.tangent[0]*p[3]+v.tangent[2]*p[5], f=v.frame;
@@ -169,8 +161,8 @@ function createOrganoidStructure(onMaterialReady) {
         const gloss=half**18, diffuse=.18+.56*Math.min(1,3*key);
         const specSlope=1.65*gloss;
         v.light=.11+.73*key+.25*gloss+.16*rim*(.68+ny*.32)+.10*Math.max(0,-px);
-        v.lightU=diffuse*tu+specSlope*(f[0]*hx+f[1]*hy+f[2]*hz);
-        v.lightV=diffuse*tv+specSlope*(f[3]*hx+f[4]*hy+f[5]*hz);
+        v.lightU=detail*(diffuse*tu+specSlope*(f[0]*hx+f[1]*hy+f[2]*hz));
+        v.lightV=detail*(diffuse*tv+specSlope*(f[3]*hx+f[4]*hy+f[5]*hz));
       }
     }
     const hasLumen=weights[2]+weights[3]>.0001;
@@ -188,8 +180,6 @@ function createOrganoidStructure(onMaterialReady) {
         if (gap || poseDirty) project(lumen[col][row],true,edgeDistance);
       }
     }
-    poseDirty=shapeTime<1;
-
     for (let col=gap;col<longitudes;col++) {
       for (let j=0;j<latitudes;j++) {
         const a=shell[col][j], b=shell[col+1][j], c=shell[col+1][j+1], d=shell[col][j+1];
@@ -246,38 +236,39 @@ function createOrganoidStructure(onMaterialReady) {
       }
     }
     // Keep the contact shadow close to the silhouette, even for a flattened specimen.
-    const radius=(right-left)/density;
+    const diameter=(right-left)/density;
+    const tileX=x-size/2, tileY=y-size/2;
     ctx.save();
-    ctx.translate((left+right)/(2*density),bottom/density+radius*.014);
-    ctx.scale(Math.max(1,radius*.55),Math.max(1,radius*.040));
+    ctx.translate(tileX+(left+right)/(2*density),tileY+bottom/density+diameter*.014);
+    ctx.scale(Math.max(1,diameter*.55),Math.max(1,diameter*.040));
     const shade=ctx.createRadialGradient(0,0,0,0,0,1);
     shade.addColorStop(0,'rgba(47,68,105,.23)'); shade.addColorStop(1,'rgba(47,68,105,0)');
     ctx.fillStyle=shade; ctx.fillRect(-1,-1,2,2);
     ctx.restore();
-    renderer.present(ctx,width,height);
+    renderer.present(ctx,tileX,tileY,size);
 
     // Resolve the nearest actually visible pixel of a feature, even after a turn.
-    const moving=shapeTime<1 || cutTime<1;
-    if (!view.showNotes) return {moving,anchors:[]};
+    if (!showNotes) return [];
     const halfway=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
     const wallTip=walls[1][Math.round(latitudes*.30)][Math.floor(wallBands.length/2)];
     const side=gap>0?gap:0;
     const mouth=halfway(lumen[0][latitudes/2],lumen[side][latitudes/2]);
     const body={x:cx+scale*.46,y:cy-scale*.12};
     let anchors;
-    if (!cutaway) {
+    if (form===1) {
+      const tips=budTips.filter(tip=>!gap || tip.col>=gap).map(tip=>shell[tip.col][tip.row]);
+      const bud=tips.sort((a,b)=>b.z-a.z)[0];
+      anchors=[renderer.pick({x:cx+scale*.30,y:cy-scale*.58},skin),renderer.pick(bud,skin)];
+    } else if (!gap) {
       anchors=[renderer.pick({x:cx+scale*.48,y:cy-scale*.33},skin)];
-    } else if (selected===1) {
-      const bud=shell[Math.round(longitudes*.83)][Math.round(latitudes*.34)];
-      anchors=[renderer.pick({x:cx+scale*.15,y:cy-scale*.76},skin),renderer.pick(bud,skin)];
-    } else if (selected===0) {
+    } else if (form===0) {
       anchors=[renderer.pick({x:cx+scale*.18,y:cy-scale*.85},skin),renderer.pick(body,tissue)];
     } else {
       anchors=[renderer.pick(wallTip,tissue),renderer.pick(mouth,cavity)];
     }
-    return {moving, anchors:anchors.map(p=>({x:p.x/density,y:p.y/density,visible:p.visible}))};
+    return anchors.map(p=>({x:tileX+p.x/density,y:tileY+p.y/density,visible:p.visible}));
   }
-  return {draw,select};
+  return {draw};
 }
 
 // A depth buffer and interpolated lighting let the same material follow the mesh
@@ -285,7 +276,7 @@ function createOrganoidStructure(onMaterialReady) {
 let organoidPigments;
 function createTissuePainter(onReady) {
   const buffer=document.createElement('canvas'), ctx=buffer.getContext('2d');
-  let w=0,h=0,bitmap,depth,features;
+  let w=0,h=0,bitmap,depth,features,textureDetail=1;
   let atlas, texWidth, stride, skinRows, wallRows, wallTop, solidTop, lumenTop, normalTop;
   function useMaterial(sheet) {
     atlas=sheet.data; texWidth=sheet.width; stride=texWidth*4;
@@ -314,7 +305,8 @@ function createTissuePainter(onReady) {
     return (atlas[texel+2]-64)/5000;
   }
 
-  function begin(width,height,pixelRatio) {
+  function begin(width,height,pixelRatio,detail) {
+    textureDetail=detail;
     const density=Math.min(Math.max(1.35,pixelRatio),1.75,1280/width,1010/height);
     const nextW=Math.max(1,Math.round(width*density)), nextH=Math.max(1,Math.round(height*density));
     if(w!==nextW || h!==nextH) {
@@ -372,6 +364,11 @@ function createTissuePainter(onReady) {
           const iu=u|0, iv=v|0, fx=u-iu, fy=v-iv, texel=(top+iv)*stride+iu*4;
           const rgb=sample(texel,fx,fy);
           red=rgb>>>16; green=(rgb>>>8)&255; blue=rgb&255;
+          if (textureDetail<1) {
+            red=pigment[0]+(red-pigment[0])*textureDetail;
+            green=pigment[1]+(green-pigment[1])*textureDetail;
+            blue=pigment[2]+(blue-pigment[2])*textureDetail;
+          }
           if (bump) {
             const normal=texel+normalOffset+(fx>=.5?4:0)+(fy>=.5?stride:0);
             const perturb=(atlas[normal]-128)*(bu+s*duLight+t*dvLight)+(atlas[normal+1]-128)*(bv+s*duMeridian+t*dvMeridian);
@@ -412,9 +409,9 @@ function createTissuePainter(onReady) {
     }
     return {x:x0,y:y0,visible:false};
   }
-  function present(target,width,height) {
+  function present(target,x,y,size) {
     ctx.putImageData(bitmap,0,0);
-    target.drawImage(buffer,0,0,width,height);
+    target.drawImage(buffer,x,y,size,size);
   }
   return {begin,triangle,pick,present,relief};
 }

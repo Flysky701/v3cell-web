@@ -7,8 +7,9 @@ const fateIds = Object.keys(study.dynamic.fates);
 const trajectoryHours = study.dynamic.hours;
 const lastFrame = trajectoryHours.length - 1;
 const shapes = ['spheroid', 'budding', 'rosette', 'collapsed'];
-const chapters = ['home-top', 'home-background', 'home-atlas', 'home-fate', 'home-method'];
-const chapterShapes = ['rosette', 'spheroid', 'budding', 'rosette', 'collapsed'];
+const chapters = ['home-top', 'home-atlas', 'home-fate'];
+const chapterTitles = ['introChapter', 'atlasChapter', 'fateChapter'];
+const fateSteps = ['beforePerturbation', 'afterPerturbation', 'stateEvolution'];
 let samples = [], selectedLineage = 'all', fate = 'formation', frame = 0;
 let compareFates = false, timer = null, fileUrls = [], uploadTotal = 0, page = 'home';
 let disposeOrganoidViewer, resultNavObserver;
@@ -26,45 +27,40 @@ const figureData = {
 
 
 function home() {
-  const acts = chapters.map((id, index) => {
-    const n = index + 1;
-    if (index === 0) {
-      const specimens = ['colon','stomach','lung'].map(lineage => {
-        const sample = samples.find(item => item.lineage===lineage && item.kind==='real');
-        return `<a href="#results?tab=atlas&lineage=${lineage}"><img src="${sample.image}" width="34" height="34" alt="">${msg(lineage)}</a>`;
-      }).join('');
-      return `<article class="story-act research-intro" id="${id}" data-chapter="0">
-        <div class="story-kicker">${msg('s1tag')}</div>
-        <h1>V3Cell</h1><h2>${msg('introSubject')}</h2>
-        <p>${msg('s1body')}</p>
-        <div class="hero-actions"><a class="btn" href="#results">${msg('results')} ↗</a>
-          <a class="text-link" href="#home-background">${msg('studyBackground')} ↓</a></div>
-        <div class="intro-specimens"><span>${msg('introSpecimens')}</span><div>${specimens}</div></div>
-      </article>`;
-    }
-    return `<article class="story-act" id="${id}" data-chapter="${index}">
-      <div class="story-kicker"><span>0${n} / 05</span>${msg('s'+n+'tag')}</div>
-      <h2>${msg('s'+n+'title')}<br><em>${msg('s'+n+'accent')}</em></h2>
-      <p>${msg('s'+n+'body')}</p>
-      <div class="hero-actions"><a class="btn" href="#${chapters[n] || 'research'}">${msg(n === 5 ? 'viewEvidence' : 'nextChapter')} ↓</a>
-      <a class="text-link" href="#${n === 3 ? 'results' : 'workbench'}">${msg(n === 3 ? 'results' : 'workbench')} ↗</a></div>
-    </article>`;
+  const chapterMark = (index, key) => `<div class="story-kicker"><span>0${index+1} / 03</span>${msg(key)}</div>`;
+  const specimens = Object.keys(lineageCounts).map(lineage => {
+    const sample = samples.find(item => item.lineage === lineage && item.kind === 'real');
+    return `<a class="lineage-node" data-lineage-node="${lineage}" href="#results?tab=atlas&lineage=${lineage}"><img src="${sample.image}" width="64" height="64" alt=""><span>${msg(lineage)} ↗</span></a>`;
   }).join('');
-  return `<section class="hero"><div class="story-atmosphere" aria-hidden="true"></div><div class="story-grid"><div class="story-acts">${acts}</div>
-  <div class="story-instrument"><div class="organoid-viewer">
+  return `<section class="hero"><div class="story-atmosphere" aria-hidden="true"></div><div class="story-grid"><div class="story-acts">
+    <article class="story-act research-intro" id="home-top" data-chapter="0">
+      ${chapterMark(0, 'introChapter')}<h1>V3Cell</h1><h2>${msg('homeSubject')}</h2><p>${msg('homeAbstract')}</p>
+      <div class="hero-actions"><a class="btn" href="#home-atlas">${msg('startAtlas')} ↓</a><a class="text-link" href="#research">${msg('studyEvidence')} ↗</a></div>
+    </article>
+    <article class="story-act" id="home-atlas" data-chapter="1">
+      ${chapterMark(1, 'lineage')}<h2>${msg('atlasChapter')}</h2><p>${msg('staticAbstract')}</p>
+      <div class="hero-actions"><a class="btn" href="#home-fate">${msg('continueFate')} ↓</a><a class="text-link" href="#results?tab=atlas">${msg('openAtlas')} ↗</a></div>
+    </article>
+    <article class="story-act" id="home-fate" data-chapter="2">
+      ${chapterMark(2, 'amniotic')}<h2>${msg('fateChapter')}</h2><p>${msg('fateAbstract')}</p>
+      <div class="fate-steps" role="group" data-i18n-label="fateSequence">${fateSteps.map((key,i) => `<button type="button" data-fate-step="${i}" aria-pressed="${i === 0}"><span class="phase-dot" aria-hidden="true"></span>${msg(key)}</button>`).join('')}</div>
+      <div class="hero-actions"><a class="btn" href="#workbench?compare">${msg('readFateFigure')} ↗</a><a class="text-link" href="#research">${msg('viewEvidence')} ↓</a></div>
+    </article></div>
+  <div class="story-instrument"><div class="organoid-viewer" data-stage="1">
         <div class="organoid-scene"><div class="structure-plate">
-          <div class="scene-stamp"><div class="specimen-title">${msg('structureModel')}<strong data-active-shape></strong></div>
+          <div class="scene-stamp"><div class="specimen-title"><span data-scene-kind></span><strong data-active-shape></strong></div>
             <div class="plate-actions"><button class="annotation-toggle" type="button" aria-pressed="false">${msg('anatomyNotes')}</button>
             <div class="section-switch" role="group" data-i18n-label="viewMode">
-              <button type="button" data-structure-view="cut" aria-pressed="true">${msg('sectionView')}</button>
-              <button type="button" data-structure-view="surface" aria-pressed="false">${msg('surfaceView')}</button>
+              <button type="button" data-structure-view="cut" aria-pressed="false">${msg('sectionView')}</button>
+              <button type="button" data-structure-view="surface" aria-pressed="true">${msg('surfaceView')}</button>
             </div></div>
           </div>
           <span class="anatomy-label label-a" data-anatomy="a"></span><span class="anatomy-label label-b" data-anatomy="b"></span>
           <button class="rotation-toggle" type="button" aria-pressed="true">${msg('autoRotate')}</button>
           <canvas tabindex="0" data-i18n-label="organoidCanvasLabel" aria-describedby="structure-caption organoid-instructions"></canvas>
+          <div class="lineage-nodes" hidden>${specimens}</div>
         </div></div>
-        <div class="shape-controls" role="group" data-i18n-label="shapeLabel">${shapes.map(id => `<button data-shape="${id}" type="button">${msg(id)}</button>`).join('')}</div>
+        <div class="shape-controls" role="group" data-i18n-label="shapeLabel">${shapes.map(id => `<button data-shape="${id}" type="button">${msg(id==='rosette' ? 'rosetteShort' : id)}</button>`).join('')}</div>
         <p id="structure-caption" class="structure-caption" aria-live="polite"></p><div class="organoid-toolbar">
           <p id="organoid-instructions" data-i18n="rotateOrganoid"></p>
           <button class="organoid-expand" type="button"><span aria-hidden="true">⤢</span>${msg('expandOrganoid')}</button>
@@ -78,8 +74,8 @@ function home() {
           </div>
         </dialog>
       </div></div></div></section>
-  <nav class="home-chapters" data-i18n-label="exploreChapters"><span class="home-progress">0%</span>
-    ${chapters.map((id,i) => `<a href="#${id}" data-i18n-label="s${i+1}tag">0${i+1}</a>`).join('')}</nav>
+  <nav class="home-chapters" data-i18n-label="chapterSelect"><span class="home-progress">0%</span>
+    ${chapters.map((id,i) => `<a href="#${id}" data-i18n-label="${chapterTitles[i]}">0${i+1}</a>`).join('')}</nav>
   <section id="research"><div class="research-summary"><div class="wrap">${eye('studyEvidence')}<h2 class="research-title">${msg('evidenceTitle')}</h2>
     <div class="kpi-grid">${[['7,749','roiKpi'],['+44.7 pp','gainKpi'],['88.9%','accKpi'],['r = 0.991','rKpi']].map(([value,key]) => `<article><strong>${value}</strong><p>${msg(key)}</p></article>`).join('')}</div>
     </div></div><div class="research-studies"><div class="wrap research-branches"><article>${eye('s3tag')}<h3>${msg('constructTitle')}</h3><p>${msg('staticStudyText')}</p><a class="text-link" href="#results?tab=atlas">${msg('results')} ↗</a></article>
@@ -202,6 +198,30 @@ const headerVisibility = new IntersectionObserver(([entry]) => {
   backToTop.hidden = entry.isIntersecting;
 }, {rootMargin:'100px 0px 0px'});
 headerVisibility.observe(header);
+
+const homeTextObserver = new IntersectionObserver(entries => {
+  let order = 0;
+  for (const {target, isIntersecting} of entries) {
+    if (!isIntersecting) continue;
+    target.style.setProperty('--text-delay', Math.min(order, 3) * 70 + 'ms');
+    target.classList.replace('home-text-pending', 'home-text-shown');
+    homeTextObserver.unobserve(target);
+    order++;
+  }
+}, {rootMargin:'0px 0px -16px'});
+
+function observeHomeText() {
+  const textBlocks = main.querySelectorAll([
+    '.story-act > :is(.story-kicker, h1, h2, p, .hero-actions, .fate-steps)',
+    '#research :is(.eyebrow, h2, h3, .paper-label, .provenance)',
+    '.kpi-grid article', '.research-branches p', '.research-source .paper p'
+  ].join(', '));
+  for (const block of textBlocks) {
+    block.classList.add('home-text-pending');
+    homeTextObserver.observe(block);
+  }
+}
+
 backToTop.addEventListener('click',() => {
   header.querySelector('.brand').focus({preventScroll:true});
   window.scrollTo({top:0,behavior:'auto'});
@@ -210,13 +230,21 @@ backToTop.addEventListener('click',() => {
 document.querySelector('.language-switch').addEventListener('click', e => {
   const b = e.target.closest('[data-lang]');
   if (!b || b.dataset.lang === language) return;
+  const chapterLink=main.querySelector('.home-chapters a[aria-current="location"]');
+  const chapter=chapterLink && document.getElementById(chapterLink.hash.slice(1));
+  const before=chapter?.getBoundingClientRect();
   language = b.dataset.lang;
   try { localStorage.setItem('v3cell.language',language); } catch { /* Keep the choice for this visit. */ }
   updateLanguage();
+  // Translated chapters wrap at different heights, particularly on phones.
+  if (before && before.top<innerHeight && before.bottom>0 && window.scrollY>0) {
+    window.scrollBy({top:chapter.getBoundingClientRect().top-before.top,behavior:'instant'});
+  }
 });
 
 function route() {
-  const [path,query] = (location.hash.slice(1) || 'home').split('?');
+  const [requestedPath,query] = (location.hash.slice(1) || 'home').split('?');
+  const path = requestedPath === 'home-background' ? 'home-top' : requestedPath === 'home-method' ? 'home-fate' : requestedPath;
   if (path === 'main') { main.focus(); return; }
   const anchor = [...chapters, 'research'].includes(path);
   if (anchor && page === 'home' && document.getElementById(path)) {
@@ -229,6 +257,7 @@ function route() {
   if (previousPage !== path) clearUploads();
   disposeOrganoidViewer?.();
   disposeOrganoidViewer = undefined;
+  homeTextObserver.disconnect();
   resultNavObserver?.disconnect();
   resultNavObserver = undefined;
   page = ['results','workbench'].includes(path) ? path : 'home';
@@ -256,7 +285,10 @@ function route() {
     resultNavObserver = new ResizeObserver(setOffset);
     resultNavObserver.observe(nav);
   }
-  if (page === 'home') disposeOrganoidViewer = mountOrganoidViewer(main.querySelector('.organoid-viewer'));
+  if (page === 'home') {
+    observeHomeText();
+    disposeOrganoidViewer = mountOrganoidViewer(main.querySelector('.organoid-viewer'));
+  }
   if (page === 'workbench') {
     // Warm the other trajectories so playback can switch all three frames together.
     for (const id of fateIds) {

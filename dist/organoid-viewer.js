@@ -1,220 +1,215 @@
 'use strict';
 
+const unit = value => Math.max(0, Math.min(1, value));
+const smooth = value => { const t = unit(value); return t*t*(3-2*t); };
+const mix = (from, to, amount) => from + (to-from)*amount;
+const formWeights = index => shapes.map((_, i) => Number(i === index));
+
 function mountOrganoidViewer(root) {
   const scene = root.querySelector('.organoid-scene');
   const plate = scene.querySelector('.structure-plate');
   const canvas = plate.querySelector('canvas');
-  const labels = [...plate.querySelectorAll('[data-anatomy]')];
-  const caption = root.querySelector('.structure-caption');
-  const shapeControls = root.querySelector('.shape-controls');
-  const viewButtons = [...plate.querySelectorAll('[data-structure-view]')];
-  const noteToggle = plate.querySelector('.annotation-toggle');
-  const rotationToggle = plate.querySelector('.rotation-toggle');
-  let showNotes = false;
   const context = canvas.getContext('2d');
-  const dialog = root.querySelector('dialog');
-  const expandedScene = dialog.querySelector('.organoid-expanded-scene');
+  const caption = root.querySelector('.structure-caption');
+  const controls = root.querySelector('.shape-controls');
+  const shapeButtons = [...controls.querySelectorAll('[data-shape]')];
+  const viewButtons = [...plate.querySelectorAll('[data-structure-view]')];
+  const sectionSwitch = plate.querySelector('.section-switch');
+  const rotation = plate.querySelector('.rotation-toggle');
+  const notes = plate.querySelector('.annotation-toggle');
+  const labels = [...plate.querySelectorAll('[data-anatomy]')];
+  const nodeGroup = plate.querySelector('.lineage-nodes');
+  const nodes = [...nodeGroup.children];
+  const instructions = root.querySelector('#organoid-instructions');
   const expand = root.querySelector('.organoid-expand');
+  const dialog = root.querySelector('dialog');
   const hero = root.closest('.hero');
   const instrument = root.closest('.story-instrument');
-  const stickyMobile = matchMedia('(max-width:760px) and (min-height:521px)');
-  const shapeButtons = [...root.querySelectorAll('[data-shape]')];
-  const chapters = document.querySelector('.home-chapters');
-  const progressLabel = chapters.querySelector('.home-progress');
-  const chaptersBySection = [...chapters.querySelectorAll('a')].map(link => ({
-    link, section:document.getElementById(link.hash.slice(1))
-  }));
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const nav = document.querySelector('.home-chapters');
+  const links = [...nav.querySelectorAll('a')];
+  const sections = links.map(link => document.getElementById(link.hash.slice(1)));
+  const steps = [...hero.querySelectorAll('[data-fate-step]')];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = matchMedia('(max-width:760px) and (min-height:521px)');
   const lifetime = new AbortController();
   const options = {signal:lifetime.signal};
-  if (!context) {
-    expand.hidden = true;
-    scene.hidden = true;
-    root.querySelector('#organoid-instructions').hidden = true;
-  }
+  const anatomy = [['cutOutline','cutMass'], ['cutOutline','cutBud'], ['cutWall','cutLumen'], ['cutWall','cutSlit']];
+  const stepCaptions = ['beforeCaption', 'afterCaption', 'evolutionCaption'];
+  const cavityNarrowing = [0, .45, 1];
+  const initialYaw = .64, initialPitch = .26;
+  let yaw = initialYaw, pitch = initialPitch, zoom = 1, drag;
+  let model, width = 0, height = 0, inView = false, frame = 0, timer = 0;
+  let previousDraw = 0, resumeAt = 0, direction = 1, rotating = true;
+  let chapter = -1, shape = 2, cutaway = true, annotated = false, phase = 0, scrollPhase = -1;
+  let weights = formWeights(shape), opening = 1, scale = 1;
+  let startPose, changedAt = 0, enteredAt = 0;
 
-  const model = context ? createOrganoidStructure(scheduleDraw) : null;
-  const anatomy = [
-    ['cutOutline','cutMass'], ['cutOutline','cutBud'],
-    ['cutWall','cutLumen'], ['cutWall','cutSlit']
-  ];
-  let width = 0, height = 0, frame = 0, progress = 0, expandedZoom = 1;
-  const initialYaw = .24, initialPitch = .30;
-  let yaw = initialYaw, pitch = initialPitch, drag = null, activeChapter, sceneHue = 225;
-  let shapeIndex = 2, cutaway = true;
-  const cutMin = -.22, cutMax = 1.78;
-  const cutCenter = (cutMax+cutMin)/2, cutRadius = (cutMax-cutMin)/2;
-  const angularSpeed = Math.PI/60; // One exterior revolution in two minutes.
-  let rotationEnabled = true, inView = false, idleTimer = 0;
-  let idleAfter = 0, lastTurn = null, cutPhase = 0;
-
-  function canRotate() {
-    return context && inView && rotationEnabled && !drag && !reducedMotion.matches &&
-      !document.hidden && !lifetime.signal.aborted;
-  }
-  function queueIdleDraw() {
-    clearTimeout(idleTimer);
-    if (!canRotate()) return;
-    // The software renderer only needs a modest cadence for this slow motion.
-    const next = Math.max(idleAfter,(lastTurn ?? 0)+1000/18);
-    idleTimer = setTimeout(scheduleDraw,Math.max(24,next-performance.now()));
-  }
-  function postponeRotation(delay = 3000) {
-    idleAfter = performance.now()+delay;
-    lastTurn = null;
-    queueIdleDraw();
-  }
-  function advanceRotation(now) {
-    if (!canRotate() || now<idleAfter) return;
-    if (lastTurn===null) {
-      // Start the cutaway arc from the current manual yaw, including at either limit.
-      cutPhase = cutaway ? Math.acos(Math.max(-1,Math.min(1,(yaw-cutCenter)/cutRadius))) : 0;
-    } else {
-      const step = angularSpeed*Math.min(250,now-lastTurn)/1000;
-      if (cutaway) {
-        cutPhase -= step/cutRadius;
-        yaw = cutCenter+cutRadius*Math.cos(cutPhase);
-      } else {
-        yaw = (yaw+step)%(2*Math.PI);
-      }
-    }
-    lastTurn = now;
-  }
-  rotationToggle.addEventListener('click',() => {
-    rotationEnabled = !rotationEnabled;
-    rotationToggle.setAttribute('aria-pressed',String(rotationEnabled));
-  },options);
-  root.addEventListener('click',event => {
-    if (rotationToggle.contains(event.target) && rotationEnabled) postponeRotation(0);
-    else postponeRotation();
-  },options);
-
-  function setText(node,key) {
+  function setText(node, key) {
     node.dataset.i18n = key;
     node.textContent = t(key);
   }
-  function describeModel() {
-    const id = shapes[shapeIndex];
-    setText(root.querySelector('[data-active-shape]'),id);
+  function describe() {
+    const intro = chapter === 0, atlas = chapter === 1;
+    const id = shapes[shape];
+    setText(plate.querySelector('[data-scene-kind]'), atlas ? 'atlasExample' : intro ? 'structureModel' : 'fateLegend');
+    setText(plate.querySelector('[data-active-shape]'), atlas ? 'atlasChapter' : intro ? id : fateSteps[phase]);
+    setText(caption, atlas ? 'atlasLegend' : intro ? id+(cutaway ? 'Cut' : 'Surface') : stepCaptions[phase]);
+    const canvasKey = atlas ? 'atlasCanvas' : intro ? 'organoidCanvasLabel' : 'fateCanvas';
+    canvas.dataset.i18nLabel = canvasKey;
+    canvas.setAttribute('aria-label', t(canvasKey));
+    canvas.tabIndex = intro && context ? 0 : -1;
+    root.dataset.stage = chapter + 1;
+    root.dataset.phase = phase;
     plate.dataset.form = id;
-    setText(caption,id+(cutaway ? 'Cut' : 'Surface'));
-    setText(labels[0],cutaway ? anatomy[shapeIndex][0] : 'outerSurface');
-    plate.dataset.view = cutaway ? 'cut' : 'surface';
-    setText(labels[1],anatomy[shapeIndex][1]);
-    labels[0].dataset.feature = cutaway && shapeIndex>=2 ? 'tissue' : 'surface';
-    labels[1].dataset.feature = shapeIndex>=2 ? 'lumen' : 'tissue';
-    labels[1].hidden = !cutaway;
-    for (const button of shapeButtons) button.setAttribute('aria-pressed',String(button.dataset.shape===id));
-    for (const button of viewButtons) button.setAttribute('aria-pressed',String((button.dataset.structureView==='cut')===cutaway));
+    nodeGroup.hidden = !atlas;
+    controls.hidden = sectionSwitch.hidden = notes.hidden = rotation.hidden = expand.hidden = instructions.hidden = !intro || !context;
+    plate.classList.toggle('show-notes', intro && annotated);
+    for (const [i, button] of shapeButtons.entries()) button.setAttribute('aria-pressed', String(i === shape));
+    for (const button of viewButtons) button.setAttribute('aria-pressed', String((button.dataset.structureView === 'cut') === cutaway));
+    notes.setAttribute('aria-pressed', String(annotated));
+    setText(labels[0], cutaway ? anatomy[shape][0] : 'outerSurface');
+    setText(labels[1], anatomy[shape][1]);
+    labels[0].dataset.feature = cutaway && shape >= 2 ? 'tissue' : 'surface';
+    labels[1].dataset.feature = shape === 1 ? 'surface' : shape >= 2 ? 'lumen' : 'tissue';
+    labels[1].hidden = !cutaway && shape !== 1;
+    for (const [i, button] of steps.entries()) button.setAttribute('aria-pressed', String(i === phase));
   }
-  function selectShape(id) {
-    shapeIndex = shapes.indexOf(id);
-    model?.select(shapeIndex,performance.now());
-    describeModel();
+  function startTransition() {
+    startPose = {weights, opening, scale};
+    changedAt = performance.now();
+    describe();
     scheduleDraw();
   }
-  for (const button of shapeButtons) {
-    button.addEventListener('click',() => selectShape(button.dataset.shape),options);
+  function setPhase(next) {
+    if (phase === next) return;
+    phase = next;
+    startTransition();
   }
-  noteToggle.addEventListener('click',() => {
-    showNotes = !showNotes;
-    noteToggle.setAttribute('aria-pressed',String(showNotes));
-    plate.classList.toggle('show-notes',showNotes);
-    scheduleDraw();
-  },options);
-  function orient(dx,dy) {
-    yaw += dx;
-    pitch = Math.max(-1.15,Math.min(1.15,pitch+dy));
-    // Keep the open side in sight in cutaway mode. Exterior mode allows a full turn.
-    if (cutaway) yaw = Math.max(cutMin,Math.min(cutMax,yaw));
-    scheduleDraw();
-  }
-  for (const button of viewButtons) {
-    button.addEventListener('click',() => {
-      const nextCut = button.dataset.structureView==='cut';
-      if (nextCut===cutaway) return;
-      cutaway = nextCut;
-      if (cutaway) { yaw=initialYaw; pitch=initialPitch; }
-      describeModel();
-      scheduleDraw();
-    },options);
-  }
-  const leaderColors = {tissue:'#34718a', lumen:'#4d6eaa', surface:'#655e96'};
-  function draw(now) {
-    frame = 0;
-    if (!inView || document.hidden) return;
-    advanceRotation(now);
-    context.clearRect(0,0,width,height);
-    const result = model.draw(context,width,height,{
-      yaw,pitch,zoom:dialog.open?expandedZoom:1+.025*progress,cutaway,now,showNotes,reduced:reducedMotion.matches
-    });
-    result.anchors.forEach((point,i) => {
-      const label=labels[i];
-      label.style.visibility = point.visible ? '' : 'hidden';
-      if (!point.visible) return;
-      const left = label.offsetLeft+label.offsetWidth/2 < width/2;
-      const x=label.offsetLeft+(left?label.offsetWidth:0), y=label.offsetTop+label.offsetHeight*.52;
-      const color=leaderColors[label.dataset.feature];
-      context.strokeStyle=color;context.lineWidth=1;
-      context.beginPath();context.moveTo(x,y);
-      context.lineTo(x+(left?1:-1)*Math.min(18,width*.027),y);
-      context.lineTo(point.x,point.y);context.stroke();
-      context.beginPath();context.arc(point.x,point.y,3.0,0,2*Math.PI);
-      context.fillStyle=color;context.fill();
-    });
-    if (result.moving) scheduleDraw();
-    else queueIdleDraw();
-  }
-
-  function scheduleDraw() {
-    if (!lifetime.signal.aborted && context && inView && !document.hidden && !frame && width && height) frame = requestAnimationFrame(draw);
-  }
-
-  const hueStops = [225,208,243,216,231];
   function syncScroll() {
     if (dialog.open) return;
-    const heroTop = hero.offsetTop;
-    const travel = Math.max(1,hero.offsetHeight - window.innerHeight);
-    const position = Math.max(0,Math.min(1,(window.scrollY-heroTop)/travel));
-    const next = reducedMotion.matches ? 0 : position;
-    if (next !== progress) {
-      progress = next;
-      scheduleDraw();
+    const line = mobile.matches ? instrument.offsetHeight + Math.max(24,(innerHeight-instrument.offsetHeight)*.25) : innerHeight*.5;
+    const current = sections.reduce((index, section, i) => section.getBoundingClientRect().top <= line ? i : index, 0);
+    if (current !== chapter) {
+      chapter = current;
+      for (const [i, link] of links.entries()) {
+        if (i === current) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+      enteredAt = performance.now();
+      scrollPhase = -1;
+      phase = 0;
+      startTransition();
     }
-    const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = Math.round(100 * Math.max(0,Math.min(1,window.scrollY / Math.max(1,scrollRange))));
-    progressLabel.textContent = `${percent}%`;
-
-    const readingLine = Math.max(window.innerHeight*.35, stickyMobile.matches ? instrument.offsetHeight+16 : 0);
-    const current = percent === 100 ? chaptersBySection.at(-1) : chaptersBySection.reduce((selected,chapter) =>
-      chapter.section.getBoundingClientRect().top <= readingLine ? chapter : selected,chaptersBySection[0]);
-    if (current !== activeChapter) {
-      activeChapter?.link.removeAttribute('aria-current');
-      current.link.setAttribute('aria-current','location');
-      selectShape(chapterShapes[Number(current.section.dataset.chapter)]);
-      activeChapter = current;
+    if (chapter === 2) {
+      const bounds = sections[2].getBoundingClientRect();
+      const progress = (line-bounds.top)/bounds.height;
+      const next = progress < .55 ? 0 : progress < .76 ? 1 : 2;
+      if (next !== scrollPhase) { scrollPhase = next; setPhase(next); }
     }
-    // Cross chapter boundaries continuously. Reduced-motion readers get the settled chapter color.
-    const stop = reducedMotion.matches ? Number(current.section.dataset.chapter) : position*4;
-    const i = Math.floor(stop), j = Math.min(i+1,4);
-    const u = stop-i, blend = u*u*(3-2*u);
-    const hue = Math.round(hueStops[i]+(hueStops[j]-hueStops[i])*blend);
-    if (hue !== sceneHue) {
-      sceneHue = hue;
-      root.style.setProperty('--scene-hue',hue);
-      scheduleDraw();
-    }
+    const length = document.documentElement.scrollHeight - innerHeight;
+    nav.querySelector('.home-progress').textContent = Math.round(100*unit(scrollY/Math.max(1,length))) + '%';
   }
 
-  const observer = new ResizeObserver(() => {
-    if (!dialog.open) {
-      const margin = (instrument.offsetHeight+6)+'px';
-      if (hero.style.getPropertyValue('--instrument-height')!==margin) hero.style.setProperty('--instrument-height',margin);
+  function drawGuide(x,y,radius) {
+    context.save();
+    context.translate(x,y);
+    context.strokeStyle = '#7797ad6b';
+    context.lineWidth = .8;
+    context.beginPath();
+    context.arc(0,0,radius,0,Math.PI*2);
+    context.stroke();
+    context.beginPath();
+    for (let i=0;i<96;i++) {
+      const angle = i*Math.PI/48, length = i%8 === 0 ? 7 : 2;
+      const dx = Math.cos(angle), dy = Math.sin(angle);
+      context.moveTo(dx*radius,dy*radius);
+      context.lineTo(dx*(radius+length),dy*(radius+length));
     }
-    const size = canvas.getBoundingClientRect();
-    if (context && size.width && size.height) {
-      width = size.width;
-      height = size.height;
+    context.stroke();
+    context.restore();
+  }
+  function drawBranches(x,y,elapsed) {
+    context.save();
+    context.strokeStyle = '#768da1';
+    context.lineWidth = 1;
+    context.setLineDash([3,4]);
+    // The same DOM centers are used for hit targets and their connecting lines.
+    for (const [i,node] of nodes.entries()) {
+      const progress = reduced.matches ? 1 : smooth((elapsed-i*85)/580);
+      const dx = node.offsetLeft-x, dy = node.offsetTop-y;
+      context.beginPath();
+      context.moveTo(x,y);
+      context.lineTo(x+progress*dx,y+progress*dy);
+      context.stroke();
+    }
+    context.restore();
+  }
+  function drawLeaders(anchors) {
+    labels.forEach((label,i) => {
+      const point = anchors[i];
+      label.style.visibility = point?.visible ? '' : 'hidden';
+      if (!point?.visible || label.hidden) return;
+      const left = label.offsetLeft+label.offsetWidth/2 < width/2;
+      const x = label.offsetLeft+(left ? label.offsetWidth : 0), y = label.offsetTop+label.offsetHeight/2;
+      context.strokeStyle = context.fillStyle = '#496e85';
+      context.lineWidth = 1;
+      context.beginPath(); context.moveTo(x,y); context.lineTo(x+(left ? 10 : -10),y); context.lineTo(point.x,point.y); context.stroke();
+      context.beginPath(); context.arc(point.x,point.y,2.4,0,2*Math.PI); context.fill();
+    });
+  }
+  function draw(now) {
+    frame = 0;
+    if (!inView || document.hidden || !width || !height || !startPose) return;
+    const motion = !reduced.matches;
+    const travel = motion ? smooth((now-changedAt)/680) : 1;
+    const narrowing = cavityNarrowing[phase];
+    let target = formWeights(shape);
+    if (chapter === 1) target = formWeights(0);
+    if (chapter === 2) target = [0, 0, 1-narrowing, narrowing];
+    weights = target.map((value,i) => mix(startPose.weights[i],value,travel));
+    opening = mix(startPose.opening, chapter === 0 ? Number(cutaway) : Number(chapter === 2),travel);
+    scale = mix(startPose.scale, chapter === 1 ? .42 : 1, travel);
+    const auto = motion && chapter === 0 && rotating && !drag;
+    if (auto && now >= resumeAt) {
+      const delta = Math.min(90,now-(previousDraw || now))*Math.PI/60000;
+      yaw += (cutaway ? direction : 1)*delta;
+      if (cutaway && (yaw >= 1.75 || yaw <= -.22)) { yaw = Math.max(-.22,Math.min(1.75,yaw)); direction *= -1; }
+    }
+    previousDraw = now;
+    const top = plate.querySelector('.scene-stamp').offsetHeight+16;
+    const area = Math.max(32,height-top-24);
+    const x = width/2, y = chapter === 1 ? height*.52 : top+area*.51;
+    const radius = Math.min(width*.31,area*.41) * zoom;
+    context.clearRect(0,0,width,height);
+    if (chapter === 1) drawBranches(x,y,now-enteredAt);
+    else drawGuide(x,y,Math.min(width*.439,area*.49));
+    model ??= createOrganoidStructure(scheduleDraw);
+    const anchors = model.draw(context,{x,y,radius:radius*scale,yaw:chapter === 0 ? yaw : initialYaw,
+      pitch:chapter === 0 ? pitch : initialPitch, weights,opening,form:shape,showNotes:chapter === 0 && annotated});
+    if (chapter === 0 && annotated) drawLeaders(anchors);
+    if (travel<1 || (motion && chapter===1 && now-enteredAt<800)) scheduleDraw();
+    else if (auto) timer = setTimeout(scheduleDraw,Math.max(60,resumeAt-now));
+  }
+  function scheduleDraw() {
+    clearTimeout(timer);
+    if (context && !frame && inView && !document.hidden && !lifetime.signal.aborted) frame = requestAnimationFrame(draw);
+  }
+  function pauseRotation() {
+    resumeAt = performance.now()+3000;
+    previousDraw = 0;
+    scheduleDraw();
+  }
+  function orient(dx,dy) {
+    yaw += dx;
+    if (cutaway) yaw = Math.max(-.22,Math.min(1.75,yaw));
+    pitch = Math.max(-1.15,Math.min(1.15,pitch+dy));
+    pauseRotation();
+  }
+  function resize() {
+    if (!dialog.open) hero.style.setProperty('--instrument-height', (instrument.offsetHeight+6)+'px');
+    const bounds = canvas.getBoundingClientRect();
+    width = bounds.width; height = bounds.height;
+    if (context && width && height) {
       const density = Math.min(devicePixelRatio || 1,2);
       const w = Math.round(width*density), h = Math.round(height*density);
       if (canvas.width !== w) canvas.width = w;
@@ -223,108 +218,90 @@ function mountOrganoidViewer(root) {
     }
     syncScroll();
     scheduleDraw();
-  });
-  // Populate the caption before the router measures a chapter or evidence anchor.
-  syncScroll();
-  observer.observe(canvas);
-  observer.observe(instrument);
-  for (const label of labels) observer.observe(label);
-  const visibility = new IntersectionObserver(entries => {
-    for (const entry of entries) {
-      if (entry.target===hero) {
-        hero.classList.toggle('ambient-visible',entry.isIntersecting && !document.hidden);
-      } else {
-        inView = entry.isIntersecting;
-        postponeRotation(1200);
-        scheduleDraw();
-      }
-    }
-  });
-  visibility.observe(hero);
-  visibility.observe(canvas);
-  document.addEventListener('visibilitychange',() => {
-    const bounds=hero.getBoundingClientRect();
-    hero.classList.toggle('ambient-visible',!document.hidden && bounds.bottom>0 && bounds.top<innerHeight);
-    postponeRotation();
+  }
+  shapeButtons.forEach((button,i) => button.addEventListener('click',() => {
+    shape = i;
+    pauseRotation();
+    startTransition();
+  },options));
+  for (const button of viewButtons) button.addEventListener('click',() => {
+    cutaway = button.dataset.structureView === 'cut';
+    if (cutaway) { yaw = initialYaw; pitch = initialPitch; }
+    pauseRotation();
+    startTransition();
+  },options);
+  notes.addEventListener('click',() => { annotated = !annotated; describe(); pauseRotation(); },options);
+  rotation.addEventListener('click',() => {
+    rotating = !rotating; resumeAt = 0; previousDraw = 0;
+    rotation.setAttribute('aria-pressed',String(rotating));
     scheduleDraw();
   },options);
-  window.addEventListener('scroll',() => {
-    postponeRotation();
+  steps.forEach((button,i) => button.addEventListener('click',() => {
+    if (chapter !== 2) sections[2].scrollIntoView({behavior:'instant'});
+    // Apply any scroll caused by focusing the button before the reader's explicit choice.
     syncScroll();
-  },{...options,passive:true});
-  reducedMotion.addEventListener('change',() => {
-    postponeRotation();
-    syncScroll();
-    scheduleDraw();
-  },options);
-
-  canvas.addEventListener('pointerdown', event => {
-    if (!event.isPrimary || event.button !== 0) return;
+    setPhase(i);
+  },options));
+  canvas.addEventListener('pointerdown',event => {
+    if (chapter || !event.isPrimary || event.button !== 0) return;
     drag = {id:event.pointerId,x:event.clientX,y:event.clientY};
-    postponeRotation();
     canvas.setPointerCapture(event.pointerId);
-  }, options);
-  canvas.addEventListener('pointermove', event => {
-    if (drag?.id !== event.pointerId) return;
-    orient((event.clientX-drag.x)*.012,(event.clientY-drag.y)*.012);
-    drag.x = event.clientX;
-    drag.y = event.clientY;
-    scheduleDraw();
-  }, options);
-  canvas.addEventListener('lostpointercapture', () => {
-    drag = null;
-    postponeRotation();
+    pauseRotation();
   },options);
+  canvas.addEventListener('pointermove',event => {
+    if (event.pointerId !== drag?.id) return;
+    orient((event.clientX-drag.x)*.012,(event.clientY-drag.y)*.012);
+    drag.x = event.clientX; drag.y = event.clientY;
+  },options);
+  canvas.addEventListener('lostpointercapture',() => { drag = null; pauseRotation(); },options);
   const directions = {ArrowLeft:[-.18,0],ArrowRight:[.18,0],ArrowUp:[0,-.18],ArrowDown:[0,.18]};
-  canvas.addEventListener('keydown', event => {
-    const step = directions[event.key];
-    if (!step) return;
-    event.preventDefault();
-    postponeRotation();
-    orient(step[0],step[1]);
-  }, options);
-
-  expand.addEventListener('click', () => {
-    expandedZoom = 1;
-    // Moving the controls into the dialog must not shift the chapter behind it.
+  canvas.addEventListener('keydown',event => {
+    if (chapter || !directions[event.key]) return;
+    event.preventDefault(); orient(...directions[event.key]);
+  },options);
+  expand.addEventListener('click',() => {
     root.style.minHeight = root.getBoundingClientRect().height+'px';
-    expandedScene.append(plate);
-    dialog.querySelector('.expanded-reading').append(shapeControls,caption);
+    dialog.querySelector('.organoid-expanded-scene').append(plate);
+    dialog.querySelector('.expanded-reading').append(controls,caption);
     canvas.setAttribute('aria-describedby','structure-caption organoid-expanded-instructions');
     dialog.showModal();
-  }, options);
-  function zoomExpanded(amount) {
-    postponeRotation();
-    expandedZoom = Math.max(.75,Math.min(1.8,expandedZoom + amount));
-    scheduleDraw();
-  }
-  canvas.addEventListener('wheel', event => {
-    if (!dialog.open || event.ctrlKey) return;
-    event.preventDefault();
-    zoomExpanded(-Math.sign(event.deltaY)*.08);
-  }, {...options,passive:false});
+    resize();
+  },options);
+  function zoomBy(amount) { zoom = Math.max(.75,Math.min(1.8,zoom+amount)); pauseRotation(); }
   for (const button of dialog.querySelectorAll('[data-viewer-zoom]')) {
-    button.addEventListener('click',() => zoomExpanded(button.dataset.viewerZoom === 'in' ? .14 : -.14),options);
+    button.addEventListener('click',() => zoomBy(button.dataset.viewerZoom === 'in' ? .14 : -.14),options);
   }
-  dialog.querySelector('button').addEventListener('click', () => dialog.close(), options);
-  dialog.addEventListener('click', event => {
-    if (event.target === dialog) dialog.close();
-  }, options);
-  dialog.addEventListener('close', () => {
-    scene.append(plate);
-    scene.after(shapeControls,caption);
+  canvas.addEventListener('wheel',event => {
+    if (!dialog.open || event.ctrlKey) return;
+    event.preventDefault(); zoomBy(-Math.sign(event.deltaY)*.08);
+  },{...options,passive:false});
+  dialog.querySelector('button').addEventListener('click',() => dialog.close(),options);
+  dialog.addEventListener('click',event => { if (event.target === dialog) dialog.close(); },options);
+  dialog.addEventListener('close',() => {
+    scene.append(plate); scene.after(controls,caption);
     root.style.removeProperty('min-height');
-    drag = null;
-    postponeRotation();
     canvas.setAttribute('aria-describedby','structure-caption organoid-instructions');
-  }, options);
+    zoom = 1; resize();
+  },options);
 
+  const sizes = new ResizeObserver(resize);
+  const visibility = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (entry.target === canvas) inView = entry.isIntersecting;
+      else hero.classList.toggle('ambient-visible',entry.isIntersecting);
+    }
+    scheduleDraw();
+  });
+  resize();
+  sizes.observe(instrument); sizes.observe(canvas);
+  visibility.observe(canvas); visibility.observe(hero);
+  reduced.addEventListener('change',scheduleDraw,options);
+  window.addEventListener('scroll',syncScroll,{...options,passive:true});
+  document.addEventListener('visibilitychange',scheduleDraw,options);
   return () => {
     lifetime.abort();
-    observer.disconnect();
-    visibility.disconnect();
-    clearTimeout(idleTimer);
-    cancelAnimationFrame(frame);
+    sizes.disconnect(); visibility.disconnect();
+    cancelAnimationFrame(frame); clearTimeout(timer);
     if (dialog.open) dialog.close();
   };
 }
