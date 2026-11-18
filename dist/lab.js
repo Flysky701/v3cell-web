@@ -35,7 +35,7 @@ function phaseReading(id,hour) {
     bi('进入推演阶段后，腔体塌陷类的玫瑰花结发育畸形，中央腔体未能稳定维持，边界不规则度随之上升。','During rollout, the cavity-collapse trajectory forms a malformed rosette whose central lumen fails to stabilize, accompanied by rising boundary irregularity.');
   if (hour < 64) return bi('在约 64 h 之前，腔体形成类的上皮细胞围绕共同的顶端收缩点初步排列。','Before ~64 h, cells in the cavity-formation trajectory organize around a shared focus of apical constriction.');
   return hour < 72 ? bi('64 h 前后进入由早期极化迈向腔体扩张的关键过渡阶段。','Around 64 h, the organoid transitions from early apical polarization toward lumen expansion.') :
-    bi('在 72–96 h 期间，成熟的玫瑰花结结构清晰围合出稳定的中央腔体，腔体面积持续扩大。','Between 72 and 96 h, a well-defined rosette encloses a expanding central lumen.');
+    bi('在 72–96 h 期间，成熟的玫瑰花结结构清晰围合出稳定的中央腔体，腔体面积持续扩大。','Between 72 and 96 h, a well-defined rosette encloses an expanding central lumen.');
 }
 
 function trajectoryCurves(id) {
