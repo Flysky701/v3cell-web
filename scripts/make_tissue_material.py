@@ -147,13 +147,13 @@ def wall():
 
 
 def solid():
-    a, b = np.meshgrid(u*14, (np.arange(HEIGHT)+.5)/HEIGHT*25)
+    a, b = np.meshgrid(u*27, (np.arange(HEIGHT)+.5)/HEIGHT*25)
     a += .16*np.sin(1.9*b+.6*a)+.048*np.cos(4.5*a-2*b)
     b += .13*np.sin(1.6*a+b)+.035*np.sin(4*b+3*a)
     ix, iy = np.floor(a).astype(int), np.floor(b).astype(int)
     best = np.full_like(a, 12)
     second = best.copy()
-    ids = rng.uniform(0, 1, (31, 21, 7))
+    ids = rng.uniform(0, 1, (31, 34, 7))
     winner = np.zeros_like(ix)
     dx, dy = np.zeros_like(a), np.zeros_like(b)
     for j in (-1, 0, 1):

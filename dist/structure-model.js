@@ -222,7 +222,8 @@ function createOrganoidStructure(onMaterialReady) {
             const light=(faceLight-slope*radialLight)/Math.sqrt(1+slope*slope);
             w.x=cx+scale*(x*xx+y*xy+z*xz); w.y=cy-scale*(x*yx+y*yy+z*yz); w.z=x*zx+y*zy+z*zz;
             w.light=.44+.42*Math.max(0,light)+.12*y+.08*t+.14*outward+.09*inward*hollow;
-            w.u=Math.min(.999,.075+.73*Math.hypot(x,z));
+            // Both exposed planes meet on the same tissue sample at the central axis.
+            w.u=Math.max(0,Math.min(1,.5+sign*.38*Math.hypot(x,z)));
             w.v=Math.max(0,Math.min(.999,.50-.40*y));
             w.layerU=j/latitudes; w.layerV=t;
           }
