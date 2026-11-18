@@ -2,17 +2,31 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#113e3c">
-<meta name="description" content="V3Cell：从无标记明场图像出发，探索虚拟类器官的视觉表型与发育轨迹。研究网站基础原型。">
-<title>V3Cell — From images to living trajectories</title>
+<meta name="theme-color" content="#f7f9fc">
+<meta name="description" data-i18n-content="siteDescription" content="V3Cell：直接从非侵入式明场显微图像构建虚拟 3D 细胞，建模类器官表型并预测发育命运轨迹。">
+<title>V3Cell — 研究概览</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
-<script src="app.js" defer></script>
+<script src="i18n.js" defer></script><script src="structure-model.js" defer></script><script src="organoid-viewer.js" defer></script><script src="data.js" defer></script><script src="evidence.js" defer></script><script src="lab.js" defer></script><script src="app.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#main">跳转至正文</a>
-<header class="header"><a class="brand" href="#home" aria-label="V3Cell 首页"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="17" ry="11" transform="rotate(-38 20 20)"/><ellipse cx="20" cy="20" rx="10" ry="16" transform="rotate(-38 20 20)"/><circle cx="20" cy="20" r="4"/></svg>V3Cell<span>.</span></a><span class="header-caption">A VIRTUAL ORGANOID JOURNEY</span><nav aria-label="主导航"><a href="#home" data-nav="home">研究概览</a><a href="#results" data-nav="results">研究结果 <span>↗</span></a><a class="nav-lab" href="#workbench" data-nav="workbench">交互工作台 <span>↗</span></a></nav></header>
+<a class="skip" href="#main" data-i18n="skip">跳转至正文</a>
+<header class="header">
+  <a class="brand" href="#home" data-i18n-label="brandHome" aria-label="V3Cell 首页"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="17" ry="11" transform="rotate(-38 20 20)"/><ellipse cx="20" cy="20" rx="10" ry="16" transform="rotate(-38 20 20)"/><circle cx="20" cy="20" r="4"/></svg>V3Cell<span>.</span></a>
+  <span class="header-caption" data-i18n="headerCaption">明场类器官研究</span>
+  <nav aria-label="主导航" data-i18n-label="navigation">
+    <a href="#home" data-nav="home" data-i18n="home">研究概览</a>
+    <a href="#results" data-nav="results"><b data-i18n="results">研究结果</b> <span aria-hidden="true">↗</span></a>
+    <a class="nav-lab" href="#workbench" data-nav="workbench"><b data-i18n="workbench">交互工作台</b> <span aria-hidden="true">↗</span></a>
+  </nav>
+  <div class="language-switch" role="group" data-i18n-label="language" aria-label="界面语言">
+    <button type="button" data-lang="zh" lang="zh-CN" aria-pressed="true">中文</button>
+    <button type="button" data-lang="en" lang="en" aria-pressed="false">English</button>
+  </div>
+</header>
 <main id="main" tabindex="-1"></main>
-<footer><a class="brand small" href="#home">V3Cell<span>.</span></a><span>From observation to possibility.</span><div>研究原型 v0.1 <span class="sep">/</span> 内容依据所提供论文稿</div></footer>
-<dialog id="figure-dialog" aria-labelledby="figure-title"><div class="dialog-top"><h2 id="figure-title">论文图示</h2><button id="close-dialog" class="icon-button" aria-label="关闭图示">×</button></div><img id="figure-image" alt=""><p id="figure-caption"></p></dialog>
+<footer><a class="brand small" href="#home">V3Cell<span>.</span></a><span data-i18n="motto"></span><div><span data-i18n="prototype"></span> <span class="sep">/</span> <span data-i18n="manuscriptCredit"></span></div></footer>
+<dialog id="figure-dialog" aria-labelledby="figure-title"><div class="dialog-top"><h2 id="figure-title" data-i18n="figure">论文图件</h2><button id="close-dialog" class="icon-button" data-i18n-label="closeFigure" aria-label="关闭图件">×</button></div><img id="figure-image" alt=""><p id="figure-caption"></p></dialog>
+<dialog id="inspection" aria-labelledby="inspection-title"><div class="dialog-top"><h2 id="inspection-title"></h2><button type="button" class="icon-button" id="close-inspection" data-i18n-label="closeFigure">×</button></div><div id="inspection-content"></div></dialog>
+<button type="button" id="back-to-top" data-i18n-label="backToTop" aria-label="返回顶部" hidden><span aria-hidden="true">↑</span></button>
 <div id="toast" role="status" aria-live="polite"></div>
 </body></html>

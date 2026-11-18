@@ -1,77 +1,5 @@
 [
   {
-    "id": "colon-budding-transparent-real-1",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "real",
-    "image": "assets/colon-budding-transparent-real-1.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-real-2",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "real",
-    "image": "assets/colon-budding-transparent-real-2.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-real-3",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "real",
-    "image": "assets/colon-budding-transparent-real-3.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-real-4",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "real",
-    "image": "assets/colon-budding-transparent-real-4.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-virtual-1",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "virtual",
-    "image": "assets/colon-budding-transparent-virtual-1.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-virtual-2",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "virtual",
-    "image": "assets/colon-budding-transparent-virtual-2.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-virtual-3",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "virtual",
-    "image": "assets/colon-budding-transparent-virtual-3.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
-    "id": "colon-budding-transparent-virtual-4",
-    "lineage": "colon",
-    "subtype": "budding-transparent",
-    "label": "出芽 · 透明",
-    "kind": "virtual",
-    "image": "assets/colon-budding-transparent-virtual-4.png",
-    "source": "main_nbe.pdf · Figure 2 · p.6"
-  },
-  {
     "id": "colon-budding-opaque-real-1",
     "lineage": "colon",
     "subtype": "budding-opaque",
@@ -144,75 +72,75 @@
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-real-1",
+    "id": "colon-budding-transparent-real-1",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "real",
-    "image": "assets/colon-non-budding-transparent-real-1.png",
+    "image": "assets/colon-budding-transparent-real-1.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-real-2",
+    "id": "colon-budding-transparent-real-2",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "real",
-    "image": "assets/colon-non-budding-transparent-real-2.png",
+    "image": "assets/colon-budding-transparent-real-2.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-real-3",
+    "id": "colon-budding-transparent-real-3",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "real",
-    "image": "assets/colon-non-budding-transparent-real-3.png",
+    "image": "assets/colon-budding-transparent-real-3.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-real-4",
+    "id": "colon-budding-transparent-real-4",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "real",
-    "image": "assets/colon-non-budding-transparent-real-4.png",
+    "image": "assets/colon-budding-transparent-real-4.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-virtual-1",
+    "id": "colon-budding-transparent-virtual-1",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "virtual",
-    "image": "assets/colon-non-budding-transparent-virtual-1.png",
+    "image": "assets/colon-budding-transparent-virtual-1.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-virtual-2",
+    "id": "colon-budding-transparent-virtual-2",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "virtual",
-    "image": "assets/colon-non-budding-transparent-virtual-2.png",
+    "image": "assets/colon-budding-transparent-virtual-2.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-virtual-3",
+    "id": "colon-budding-transparent-virtual-3",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "virtual",
-    "image": "assets/colon-non-budding-transparent-virtual-3.png",
+    "image": "assets/colon-budding-transparent-virtual-3.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
-    "id": "colon-non-budding-transparent-virtual-4",
+    "id": "colon-budding-transparent-virtual-4",
     "lineage": "colon",
-    "subtype": "non-budding-transparent",
-    "label": "无出芽 · 透明",
+    "subtype": "budding-transparent",
+    "label": "出芽 · 透明",
     "kind": "virtual",
-    "image": "assets/colon-non-budding-transparent-virtual-4.png",
+    "image": "assets/colon-budding-transparent-virtual-4.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
@@ -285,6 +213,78 @@
     "label": "无出芽 · 不透明",
     "kind": "virtual",
     "image": "assets/colon-non-budding-opaque-virtual-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-1",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-2",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-3",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-real-4",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "real",
+    "image": "assets/colon-non-budding-transparent-real-4.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-1",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-1.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-2",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-2.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-3",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-3.png",
+    "source": "main_nbe.pdf · Figure 2 · p.6"
+  },
+  {
+    "id": "colon-non-budding-transparent-virtual-4",
+    "lineage": "colon",
+    "subtype": "non-budding-transparent",
+    "label": "无出芽 · 透明",
+    "kind": "virtual",
+    "image": "assets/colon-non-budding-transparent-virtual-4.png",
     "source": "main_nbe.pdf · Figure 2 · p.6"
   },
   {
