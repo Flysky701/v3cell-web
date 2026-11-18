@@ -305,15 +305,34 @@ html {scroll-padding-top:0}
 }
 .story-act[data-chapter="1"] {--story-accent:#316781}
 .story-act[data-chapter="2"] {--story-accent:#575596}
-.story-act[data-chapter="3"] {--story-accent:#285f78}
-.story-act[data-chapter="4"] {--story-accent:#455d91}
 main:has(#research) {--research-entry:#eef3f8;--research-mist:#eff3f9}
 .hero::after {
   content:"";position:absolute;inset:auto 0 0;height:clamp(110px,20svh,200px);z-index:-1;pointer-events:none;
   background:linear-gradient(to bottom,transparent,var(--research-entry));
 }
-.story-grid {width:min(1510px,100%);margin:auto;padding:0 7% 0 6%;display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:6%;align-items:start}
-.story-acts {min-width:0}
+html:has(.home-chapters) {scroll-snap-type:y mandatory}
+body:has(.home-chapters) footer {scroll-snap-align:end}
+#research {scroll-snap-align:start}
+.story-act {position:relative;scroll-snap-align:start;scroll-snap-stop:always}
+.story-act+.story-act {box-shadow:inset 0 1px #b5c6d650}
+.chapter-panel {
+  width:min(1510px,100%);min-height:100svh;margin:auto;padding:clamp(22px,4svh,52px) 7% clamp(28px,4svh,52px) 6%;
+  display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:6%;align-items:center;
+}
+.chapter-copy {min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+#home-top {scroll-margin-top:var(--intro-header,76px)}
+#home-top .chapter-panel {min-height:calc(100svh - var(--intro-header,76px))}
+#home-atlas .organoid-viewer {grid-column:1;grid-row:1}
+#home-atlas .chapter-copy {grid-column:2;grid-row:1}
+/* The fate composition stays in its own chapter while its three snap points pass. */
+.fate-stops {display:none}
+#home-fate.phase-track {--phase-distance:48svh;scroll-snap-align:none}
+.phase-track::after {content:"";display:block;height:calc(2 * var(--phase-distance))}
+.phase-track .chapter-panel {position:sticky;top:0}
+.phase-track .fate-stops {display:block;position:absolute;inset:0;pointer-events:none}
+.fate-stops span {position:absolute;left:0;top:0;width:1px;height:1px;scroll-snap-align:start;scroll-snap-stop:always}
+.fate-stops span:nth-child(2) {top:var(--phase-distance)}
+.fate-stops span:nth-child(3) {top:calc(2 * var(--phase-distance))}
 @media screen and (prefers-reduced-motion:no-preference) {
   .home-text-pending {
     opacity:0;
@@ -321,7 +340,7 @@ main:has(#research) {--research-entry:#eef3f8;--research-mist:#eff3f9}
   }
   .story-kicker.home-text-pending {transform:translateX(-16px)}
   .story-act :is(h1,h2).home-text-pending {clip-path:inset(0 0 100% 0);transform:translateY(.14em)}
-  .story-act p.home-text-pending {transform:none}
+  .chapter-copy p.home-text-pending {transform:none}
   .home-text-shown {
     transition:opacity 480ms ease-out var(--text-delay),
                transform 600ms cubic-bezier(.2,.75,.25,1) var(--text-delay);
@@ -330,12 +349,10 @@ main:has(#research) {--research-entry:#eef3f8;--research-mist:#eff3f9}
     clip-path:inset(-6% -2% -10%);transition:clip-path 700ms cubic-bezier(.2,.75,.25,1) var(--text-delay),transform 650ms ease-out var(--text-delay),opacity 380ms ease-out var(--text-delay)
   }
 }
-.story-act {min-height:max(620px,84svh);padding:64px 0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;scroll-margin-top:8px}
-.story-act+.story-act {border-top:1px solid #b5c6d650}
 .story-kicker,.section-ref,.section-title>span,.specimen-lineage,.scene-stamp {font:600 11px/1.6 var(--mono);letter-spacing:.09em}
 .story-kicker {display:flex;align-items:center;gap:13px;color:var(--story-accent)}
 .story-kicker>span:first-child {font-size:12px;padding-right:13px;border-right:1px solid #8a8aa066;color:#50627e}
-.story-act h1,.story-act h2,html:lang(en) .story-act h1 {margin:25px 0 19px;font-size:clamp(36px,3.8vw,66px);letter-spacing:-.046em;line-height:1.16;text-wrap:balance}
+.story-act h1,.chapter-copy h2,html:lang(en) .story-act h1 {margin:25px 0 19px;font-size:clamp(36px,3.8vw,66px);letter-spacing:-.046em;line-height:1.16;text-wrap:balance}
 .story-act em {color:var(--story-accent);font-style:normal}
 @supports (background-clip:text) {
   .story-act em {
@@ -347,14 +364,14 @@ main:has(#research) {--research-entry:#eef3f8;--research-mist:#eff3f9}
 @media (forced-colors:active) {
   .story-act em {background:none;-webkit-text-fill-color:CanvasText}
 }
-.story-act p {max-width:36em;color:var(--muted);font-size:clamp(14px,1.1vw,18px);line-height:1.9}
+.chapter-copy p {max-width:36em;color:var(--muted);font-size:clamp(14px,1.1vw,18px);line-height:1.9}
 .research-intro .story-kicker {font:550 12px/1.5 var(--sans);letter-spacing:.13em;color:#446796}
 .research-intro .story-kicker>span:first-child {border:0;padding:0;color:inherit}
 .hero .research-intro h1,html:lang(en) .hero .research-intro h1 {
   font:550 clamp(76px,7.7vw,124px)/.99 var(--display);letter-spacing:-.07em;margin:20px 0 14px;color:#1b2d49;
 }
-.hero .research-intro h2 {font-size:clamp(24px,2.05vw,33px);letter-spacing:-.04em;margin:0 0 18px;line-height:1.3;color:#2d4260}
-.hero .research-intro p {max-width:31em;color:var(--muted)}
+.hero .research-intro .chapter-copy h2 {font-size:clamp(24px,2.05vw,33px);letter-spacing:-.04em;margin:0 0 18px;line-height:1.3;color:#2d4260}
+.hero .research-intro .chapter-copy p {max-width:31em;color:var(--muted)}
 .research-intro .hero-actions {margin-top:24px}
 .intro-specimens {display:flex;align-items:center;gap:15px;margin-top:38px;padding-top:16px;border-top:1px solid #b5aebc38}
 .intro-specimens>span {font-size:11px;color:#50627a}
@@ -362,7 +379,6 @@ main:has(#research) {--research-entry:#eef3f8;--research-mist:#eff3f9}
 .intro-specimens a {display:flex;align-items:center;gap:6px;font-size:12px;color:#394d6d}
 .intro-specimens img {width:32px;height:32px;object-fit:cover;border:1px solid #ccd7e1;border-radius:3px}
 .intro-specimens a:hover,.intro-specimens a:focus-visible {color:#294d86;text-decoration:underline}
-.story-instrument {position:sticky;top:clamp(16px,8vh,90px);margin:clamp(32px,7vh,90px) 0;min-width:0}
 .organoid-scene {aspect-ratio:1.28;border:0;border-radius:0;background:radial-gradient(ellipse 56% 50% at 49% 46%,hsl(var(--scene-hue) 38% 79% / .24),transparent)}
 .organoid-expanded-scene {border-color:#9f93a72b}
 .structure-plate {position:relative;width:100%;height:100%;border-radius:inherit;isolation:isolate}
@@ -579,7 +595,6 @@ main:has(.lab-shell) {
 #inspection .dialog-top {position:sticky;top:-25px;z-index:1;background:white;padding:7px 0}
 button:focus-visible,a:focus-visible,summary:focus-visible {outline:3px solid #657dc6;outline-offset:2px}
 @media(max-width:1030px) {
-  .story-grid {padding-inline:5%;gap:4%}
   .home-chapters {display:flex;align-items:center;gap:2px;pointer-events:auto}
   .home-chapters a {display:grid;font-size:10px;width:25px;height:25px}
   .home-chapters .home-progress {display:none}
@@ -587,32 +602,26 @@ button:focus-visible,a:focus-visible,summary:focus-visible {outline:3px solid #6
 }
 @media(max-width:760px) {
   .header {height:auto}
-  .story-grid {display:flex;flex-direction:column;gap:0;padding:0 6%}
-  .story-acts {display:contents}
-  .hero .research-intro {order:-2;min-height:0;padding:27px 0 20px;align-self:stretch}
   .hero .research-intro h1,html:lang(en) .hero .research-intro h1 {font-size:clamp(52px,12vw,72px);margin:9px 0}
-  .hero .research-intro h2 {font-size:clamp(19px,4.5vw,27px);margin-bottom:10px}
-  .hero .research-intro p {font-size:13px;line-height:1.65}
+  .hero .research-intro .chapter-copy h2 {font-size:clamp(19px,4.5vw,27px);margin-bottom:10px}
+  .hero .research-intro .chapter-copy p {font-size:13px;line-height:1.65}
   .research-intro .hero-actions {margin-top:13px}
   .research-intro .hero-actions .btn {min-height:34px;padding:6px 14px}
   .intro-specimens {margin-top:16px;padding-top:10px;gap:10px}
   .intro-specimens>div {gap:12px}
   .intro-specimens img {width:24px;height:24px}
   .intro-specimens a,.intro-specimens>span {font-size:10px}
-  .story-act {align-self:stretch}
   .plate-actions {gap:8px}
   .annotation-toggle {font-size:10px}
 
-  .story-instrument {order:-1;z-index:1;top:0;align-self:stretch;margin:0 -6.82%;padding:10px 6.82%;background:linear-gradient(180deg,#f6f9fcf7,#edf3faf5 70%,var(--research-entry));backdrop-filter:blur(12px)}
   .organoid-viewer {display:block}
   .organoid-scene {height:clamp(165px,27svh,235px);aspect-ratio:auto;border-radius:0}
   .shape-controls button {padding:6px 2px;font-size:11px}
   .organoid-toolbar {padding:3px 0 0}
   .organoid-toolbar p,.organoid-expand {font-size:10px}
   .organoid-expand {padding:1px 7px}
-  .story-act {min-height:57svh;padding:32px 0;scroll-margin-top:var(--instrument-height,calc(clamp(148px,24svh,210px) + 100px))}
-  .story-act h1,.story-act h2,html:lang(en) .story-act h1 {font-size:clamp(32px,7.8vw,46px);margin:15px 0}
-  .story-act p {font-size:14px}
+  .story-act h1,.chapter-copy h2,html:lang(en) .story-act h1 {font-size:clamp(32px,7.8vw,46px);margin:15px 0}
+  .chapter-copy p {font-size:14px}
   .scene-stamp {font-size:10px;inset:7px 9px auto}
   .specimen-title>span {font-size:9px}
   .specimen-title strong {font-size:13px}
@@ -638,10 +647,6 @@ button:focus-visible,a:focus-visible,summary:focus-visible {outline:3px solid #6
   .window-band span {font-size:10px}
   .roi-comparison {gap:8px}
   .atlas-explorer {padding-inline:0}
-}
-@media(max-height:520px) and (max-width:760px) {
-  .story-instrument {position:relative}
-  .story-act {scroll-margin-top:8px}
 }
 
 .evidence-nav a span,.lab-modes a span {display:inline}
@@ -716,22 +721,18 @@ button:focus-visible,a:focus-visible,summary:focus-visible {outline:3px solid #6
     radial-gradient(ellipse at 49% 42%,#fcfefe,#e2edf2);
   border-color:#a7bdc9;border-radius:7px
 }
-.story-instrument .organoid-toolbar:has([hidden].organoid-expand) {display:none}
 .organoid-viewer .structure-caption {min-height:2lh}
 @media screen and (prefers-reduced-motion:no-preference) {
-  .organoid-viewer {animation:plate-appear .65s ease-out}
-  @keyframes plate-appear {from {opacity:0} to {opacity:1}}
-  .organoid-viewer[data-stage="2"] .lineage-node {animation:lineage-appear .55s ease-out both}
-  .organoid-viewer[data-stage="2"] .lineage-node:nth-child(2) {animation-delay:85ms}
-  .organoid-viewer[data-stage="2"] .lineage-node:nth-child(3) {animation-delay:170ms}
+  .organoid-viewer.in-view .organoid-scene {animation:plate-appear .65s cubic-bezier(.2,.72,.2,1) both}
+  @keyframes plate-appear {from {opacity:.25;transform:translateY(22px) scale(.97)} to {opacity:1;transform:none}}
+  .organoid-viewer.in-view[data-stage="2"] .lineage-node {animation:lineage-appear .55s ease-out both}
+  .organoid-viewer.in-view[data-stage="2"] .lineage-node:nth-child(2) {animation-delay:85ms}
+  .organoid-viewer.in-view[data-stage="2"] .lineage-node:nth-child(3) {animation-delay:170ms}
   @keyframes lineage-appear {from {opacity:0;scale:.78} to {opacity:1;scale:1}}
   .organoid-viewer[data-stage="3"] .specimen-title strong {animation:state-appear .45s ease-out both}
   @keyframes state-appear {from {opacity:0;transform:translateY(5px)} to {opacity:1;transform:none}}
 }
 @media(min-width:761px) {
-  .story-act {min-height:max(590px,calc(100svh - 76px))}
-  #home-fate {min-height:max(740px,120svh)}
-  .story-instrument {top:clamp(15px,6svh,75px);margin:clamp(28px,6svh,75px) 0}
   .organoid-scene {max-height:63svh}
 }
 @media(max-width:760px) {
@@ -741,18 +742,18 @@ button:focus-visible,a:focus-visible,summary:focus-visible {outline:3px solid #6
   .plate-actions {gap:5px}
   .section-switch button {padding:3px 5px}
   .structure-plate .rotation-toggle {min-height:20px;padding:2px 6px;font-size:10px;bottom:3px;right:5px}
+  .chapter-panel {
+    display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:clamp(12px,2.6svh,24px);
+    padding:clamp(16px,3svh,28px) 6% clamp(44px,6svh,60px);
+  }
   .organoid-scene {height:clamp(180px,27svh,255px)}
   .lineage-node {font-size:11px;gap:2px}
   .lineage-node img {width:clamp(32px,5svh,46px);border-width:2px}
   .lineage-node:nth-child(1),.lineage-node:nth-child(2) {top:46%}
-  #home-fate {min-height:95svh;justify-content:flex-start;padding-top:clamp(30px,7svh,64px)}
   .organoid-dialog .organoid-expanded-scene {height:clamp(220px,55svh,480px)}
 }
 @media(max-width:760px) and (max-height:520px) and (orientation:landscape) {
-  .story-grid {display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);gap:4%;padding-inline:3%}
-  .story-acts {display:block}
-  .story-act,.hero .research-intro {min-height:100svh;scroll-margin-top:6px}
-  .story-instrument {position:sticky;top:4px;align-self:start;order:0;margin:0;padding:4px 0;background:none;backdrop-filter:none}
+  .chapter-panel {display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);align-items:center;gap:4%;padding:16px 4% 36px}
   .organoid-scene {height:clamp(150px,52svh,218px)}
 }
 

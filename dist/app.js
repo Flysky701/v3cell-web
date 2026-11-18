@@ -12,7 +12,7 @@ const chapterTitles = ['introChapter', 'atlasChapter', 'fateChapter'];
 const fateSteps = ['beforePerturbation', 'afterPerturbation', 'stateEvolution'];
 let samples = [], selectedLineage = 'all', fate = 'formation', frame = 0;
 let compareFates = false, timer = null, fileUrls = [], uploadTotal = 0, page = 'home';
-let disposeOrganoidViewer, resultNavObserver;
+let disposeHomeStory, resultNavObserver;
 const bi = (zh, en) => language === 'en' ? en : zh;
 const msg = key => `<span data-i18n="${key}">${t(key)}</span>`;
 const eye = key => `<div class="eyebrow"><span class="dot"></span>${msg(key)}</div>`;
@@ -26,42 +26,25 @@ const figureData = {
 };
 
 
-function home() {
-  const chapterMark = (index, key) => `<div class="story-kicker"><span>0${index+1} / 03</span>${msg(key)}</div>`;
-  const specimens = Object.keys(lineageCounts).map(lineage => {
-    const sample = samples.find(item => item.lineage === lineage && item.kind === 'real');
-    return `<a class="lineage-node" data-lineage-node="${lineage}" href="#results?tab=atlas&lineage=${lineage}"><img src="${sample.image}" width="64" height="64" alt=""><span>${msg(lineage)} ↗</span></a>`;
-  }).join('');
-  return `<section class="hero"><div class="story-atmosphere" aria-hidden="true"></div><div class="story-grid"><div class="story-acts">
-    <article class="story-act research-intro" id="home-top" data-chapter="0">
-      ${chapterMark(0, 'introChapter')}<h1>V3Cell</h1><h2>${msg('homeSubject')}</h2><p>${msg('homeAbstract')}</p>
-      <div class="hero-actions"><a class="btn" href="#home-atlas">${msg('startAtlas')} ↓</a><a class="text-link" href="#research">${msg('studyEvidence')} ↗</a></div>
-    </article>
-    <article class="story-act" id="home-atlas" data-chapter="1">
-      ${chapterMark(1, 'lineage')}<h2>${msg('atlasChapter')}</h2><p>${msg('staticAbstract')}</p>
-      <div class="hero-actions"><a class="btn" href="#home-fate">${msg('continueFate')} ↓</a><a class="text-link" href="#results?tab=atlas">${msg('openAtlas')} ↗</a></div>
-    </article>
-    <article class="story-act" id="home-fate" data-chapter="2">
-      ${chapterMark(2, 'amniotic')}<h2>${msg('fateChapter')}</h2><p>${msg('fateAbstract')}</p>
-      <div class="fate-steps" role="group" data-i18n-label="fateSequence">${fateSteps.map((key,i) => `<button type="button" data-fate-step="${i}" aria-pressed="${i === 0}"><span class="phase-dot" aria-hidden="true"></span>${msg(key)}</button>`).join('')}</div>
-      <div class="hero-actions"><a class="btn" href="#workbench?compare">${msg('readFateFigure')} ↗</a><a class="text-link" href="#research">${msg('viewEvidence')} ↓</a></div>
-    </article></div>
-  <div class="story-instrument"><div class="organoid-viewer" data-stage="1">
+function chapterViewer(chapter, specimens = '') {
+  const intro = chapter === 0;
+  const captionId = intro ? 'structure-caption' : chapters[chapter]+'-caption';
+  return `<div class="organoid-viewer" data-stage="${chapter+1}">
         <div class="organoid-scene"><div class="structure-plate">
           <div class="scene-stamp"><div class="specimen-title"><span data-scene-kind></span><strong data-active-shape></strong></div>
-            <div class="plate-actions"><button class="annotation-toggle" type="button" aria-pressed="false">${msg('anatomyNotes')}</button>
+            ${intro ? `<div class="plate-actions"><button class="annotation-toggle" type="button" aria-pressed="false">${msg('anatomyNotes')}</button>
             <div class="section-switch" role="group" data-i18n-label="viewMode">
               <button type="button" data-structure-view="cut" aria-pressed="false">${msg('sectionView')}</button>
               <button type="button" data-structure-view="surface" aria-pressed="true">${msg('surfaceView')}</button>
-            </div></div>
+            </div></div>` : ''}
           </div>
-          <span class="anatomy-label label-a" data-anatomy="a"></span><span class="anatomy-label label-b" data-anatomy="b"></span>
-          <button class="rotation-toggle" type="button" aria-pressed="true">${msg('autoRotate')}</button>
-          <canvas tabindex="0" data-i18n-label="organoidCanvasLabel" aria-describedby="structure-caption organoid-instructions"></canvas>
-          <div class="lineage-nodes" hidden>${specimens}</div>
+          ${intro ? `<span class="anatomy-label label-a" data-anatomy="a"></span><span class="anatomy-label label-b" data-anatomy="b"></span>
+          <button class="rotation-toggle" type="button" aria-pressed="true">${msg('autoRotate')}</button>` : ''}
+          <canvas tabindex="${intro ? 0 : -1}" aria-describedby="${captionId}${intro ? ' organoid-instructions' : ''}"></canvas>
+          ${chapter === 1 ? `<div class="lineage-nodes">${specimens}</div>` : ''}
         </div></div>
-        <div class="shape-controls" role="group" data-i18n-label="shapeLabel">${shapes.map(id => `<button data-shape="${id}" type="button">${msg(id==='rosette' ? 'rosetteShort' : id)}</button>`).join('')}</div>
-        <p id="structure-caption" class="structure-caption" aria-live="polite"></p><div class="organoid-toolbar">
+        ${intro ? `<div class="shape-controls" role="group" data-i18n-label="shapeLabel">${shapes.map(id => `<button data-shape="${id}" type="button">${msg(id==='rosette' ? 'rosetteShort' : id)}</button>`).join('')}</div>` : ''}
+        <p id="${captionId}" class="structure-caption" aria-live="polite"></p>${intro ? `<div class="organoid-toolbar">
           <p id="organoid-instructions" data-i18n="rotateOrganoid"></p>
           <button class="organoid-expand" type="button"><span aria-hidden="true">⤢</span>${msg('expandOrganoid')}</button>
         </div>
@@ -72,8 +55,33 @@ function home() {
             <button class="icon-button" type="button" data-viewer-zoom="out" data-i18n-label="zoomOrganoidOut">−</button>
             <button class="icon-button" type="button" data-viewer-zoom="in" data-i18n-label="zoomOrganoidIn">+</button>
           </div>
-        </dialog>
-      </div></div></div></section>
+        </dialog>` : ''}
+      </div>`;
+}
+
+function home() {
+  const chapterMark = (index, key) => `<div class="story-kicker"><span>0${index+1} / 03</span>${msg(key)}</div>`;
+  const specimens = Object.keys(lineageCounts).map(lineage => {
+    const sample = samples.find(item => item.lineage === lineage && item.kind === 'real');
+    return `<a class="lineage-node" data-lineage-node="${lineage}" href="#results?tab=atlas&lineage=${lineage}"><img src="${sample.image}" width="64" height="64" alt=""><span>${msg(lineage)} ↗</span></a>`;
+  }).join('');
+  return `<section class="hero"><div class="story-atmosphere" aria-hidden="true"></div>
+    <article class="story-act research-intro" id="home-top" data-chapter="0"><div class="chapter-panel"><div class="chapter-copy">
+      ${chapterMark(0, 'introChapter')}<h1>V3Cell</h1><h2>${msg('homeSubject')}</h2><p>${msg('homeAbstract')}</p>
+      <div class="hero-actions"><a class="btn" href="#home-atlas">${msg('startAtlas')} ↓</a><a class="text-link" href="#research">${msg('studyEvidence')} ↗</a></div>
+    </div>${chapterViewer(0)}</div></article>
+    <article class="story-act" id="home-atlas" data-chapter="1"><div class="chapter-panel"><div class="chapter-copy">
+      ${chapterMark(1, 'lineage')}<h2>${msg('atlasChapter')}</h2><p>${msg('staticAbstract')}</p>
+      <div class="hero-actions"><a class="btn" href="#home-fate">${msg('continueFate')} ↓</a><a class="text-link" href="#results?tab=atlas">${msg('openAtlas')} ↗</a></div>
+    </div>${chapterViewer(1, specimens)}</div></article>
+    <article class="story-act" id="home-fate" data-chapter="2"><div class="chapter-panel"><div class="chapter-copy">
+      ${chapterMark(2, 'amniotic')}<h2>${msg('fateChapter')}</h2><p>${msg('fateAbstract')}</p>
+      <div class="fate-steps" role="group" data-i18n-label="fateSequence">${fateSteps.map((key,i) => `<button type="button" data-fate-step="${i}" aria-pressed="${i === 0}"><span class="phase-dot" aria-hidden="true"></span>${msg(key)}</button>`).join('')}</div>
+      <div class="hero-actions"><a class="btn" href="#workbench?compare">${msg('readFateFigure')} ↗</a><a class="text-link" href="#research">${msg('viewEvidence')} ↓</a></div>
+    </div>${chapterViewer(2)}</div>
+      <div class="fate-stops" aria-hidden="true">${fateSteps.map(() => '<span></span>').join('')}</div>
+    </article>
+  </section>
   <nav class="home-chapters" data-i18n-label="chapterSelect"><span class="home-progress">0%</span>
     ${chapters.map((id,i) => `<a href="#${id}" data-i18n-label="${chapterTitles[i]}">0${i+1}</a>`).join('')}</nav>
   <section id="research"><div class="research-summary"><div class="wrap">${eye('studyEvidence')}<h2 class="research-title">${msg('evidenceTitle')}</h2>
@@ -212,7 +220,7 @@ const homeTextObserver = new IntersectionObserver(entries => {
 
 function observeHomeText() {
   const textBlocks = main.querySelectorAll([
-    '.story-act > :is(.story-kicker, h1, h2, p, .hero-actions, .fate-steps)',
+    '.chapter-copy > :is(.story-kicker, h1, h2, p, .hero-actions, .fate-steps)',
     '#research :is(.eyebrow, h2, h3, .paper-label, .provenance)',
     '.kpi-grid article', '.research-branches p', '.research-source .paper p'
   ].join(', '));
@@ -255,8 +263,8 @@ function route() {
   const previousPage = page;
   stopPlayback();
   if (previousPage !== path) clearUploads();
-  disposeOrganoidViewer?.();
-  disposeOrganoidViewer = undefined;
+  disposeHomeStory?.();
+  disposeHomeStory = undefined;
   homeTextObserver.disconnect();
   resultNavObserver?.disconnect();
   resultNavObserver = undefined;
@@ -287,7 +295,7 @@ function route() {
   }
   if (page === 'home') {
     observeHomeText();
-    disposeOrganoidViewer = mountOrganoidViewer(main.querySelector('.organoid-viewer'));
+    disposeHomeStory = mountHomeStory(main.querySelector('.hero'));
   }
   if (page === 'workbench') {
     // Warm the other trajectories so playback can switch all three frames together.
