@@ -197,7 +197,7 @@ function mountOrganoidViewer(section, getModel) {
     if (chapter === 2) target = [0, 0, 1-narrowing, narrowing];
     weights = target.map((value,i) => mix(startPose.weights[i],value,travel));
     opening = mix(startPose.opening, chapter === 0 ? Number(cutaway) : Number(chapter === 2),travel);
-    scale = mix(startPose.scale, chapter === 1 ? .42 : 1, travel);
+    scale = mix(startPose.scale, chapter === 1 ? .51 : 1, travel);
     const auto = motion && chapter === 0 && rotating && !drag;
     if (auto && now >= resumeAt) {
       const delta = Math.min(90,now-(previousDraw || now))*Math.PI/60000;
@@ -207,8 +207,8 @@ function mountOrganoidViewer(section, getModel) {
     previousDraw = now;
     const top = plate.querySelector('.scene-stamp').offsetHeight+16;
     const area = Math.max(32,height-top-24);
-    const x = width/2, y = chapter === 1 ? height*.52 : top+area*.51;
-    const radius = Math.min(width*.31,area*.41) * zoom;
+    const x = width/2, y = chapter === 1 ? height*.49 : top+area*.51;
+    const radius = Math.min(width*.39,area*.45) * zoom;
     context.clearRect(0,0,width,height);
     if (chapter === 1) drawBranches(x,y,now-enteredAt);
     else drawGuide(x,y,Math.min(width*.439,area*.49));
