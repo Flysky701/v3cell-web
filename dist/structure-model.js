@@ -2,7 +2,7 @@
 
 // One closed, textured surface per form. Opening a longitude sector exposes the
 // inner wall and the two cut faces. All pigments and geometry are illustrative.
-function createOrganoidStructure(onMaterialReady, longitudes = 104) {
+function createOrganoidStructure(onMaterialReady, longitudes = 104, material) {
   const latitudes = longitudes/2;
   const tau = 2*Math.PI, seam = .115;
   const shell = [], lumen = [], walls = [[],[]];
@@ -10,7 +10,7 @@ function createOrganoidStructure(onMaterialReady, longitudes = 104) {
   const wallBands = [0,.035,.09,.20,.50,.80,.91,.965,1];
   const skin = 0, cavity = 1, tissue = 2;
   let lastWeights = [], lastDetail = -1;
-  const renderer = createTissuePainter(() => { lastWeights=[]; onMaterialReady(); });
+  const renderer = createTissuePainter(() => { lastWeights=[]; onMaterialReady(); }, material);
 
   // Lobes join the same surface as the body, including at their necks.
   const buds = [
@@ -273,8 +273,8 @@ function createOrganoidStructure(onMaterialReady, longitudes = 104) {
 
 // A depth buffer and interpolated lighting let the same material follow the mesh
 // during rotation, including in browsers without a hardware-accelerated 3D context.
-let organoidPigments;
-function createTissuePainter(onReady) {
+const organoidPigments = new Map();
+function createTissuePainter(onReady, material = {}) {
   const buffer=document.createElement('canvas'), ctx=buffer.getContext('2d');
   let w=0,h=0,bitmap,depth,features,textureDetail=1;
   let atlas, texWidth, stride, skinRows, wallRows, wallTop, solidTop, lumenTop, normalTop;
@@ -284,7 +284,8 @@ function createTissuePainter(onReady) {
     wallTop=skinRows; solidTop=wallTop+wallRows;
     lumenTop=solidTop+skinRows; normalTop=lumenTop+skinRows;
   }
-  if (organoidPigments) useMaterial(organoidPigments);
+  const source = material.src || 'assets/organoid-material.jpg';
+  if (organoidPigments.has(source)) useMaterial(organoidPigments.get(source));
   else {
     const image=new Image();
     image.onload=()=>{
@@ -292,13 +293,16 @@ function createTissuePainter(onReady) {
       sheet.width=image.width; sheet.height=image.height;
       const ink=sheet.getContext('2d');
       ink.drawImage(image,0,0);
-      organoidPigments=ink.getImageData(0,0,sheet.width,sheet.height);
-      useMaterial(organoidPigments);
+      let pigments;
+      try { pigments=ink.getImageData(0,0,sheet.width,sheet.height); }
+      catch (error) { if (error.name === 'SecurityError') return; throw error; }
+      organoidPigments.set(source,pigments);
+      useMaterial(pigments);
       onReady();
     };
-    image.src='assets/organoid-material.jpg';
+    image.src=source;
   }
-  const base=[[119,139,192],[67,100,147],[147,198,205]];
+  const base=material.base || [[119,139,192],[67,100,147],[147,198,205]];
   function relief(u,v) {
     if (!atlas) return 0;
     const texel=(normalTop+Math.round(v*(skinRows-1)))*stride+Math.round(u*(texWidth-1))*4;
