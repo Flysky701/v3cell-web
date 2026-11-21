@@ -26,61 +26,73 @@ const figureData = {
 };
 
 
-function chapterViewer(chapter, specimens = '') {
-  const intro = chapter === 0;
-  const captionId = intro ? 'structure-caption' : chapters[chapter]+'-caption';
-  return `<div class="organoid-viewer" data-stage="${chapter+1}">
-        <div class="organoid-scene"><div class="structure-plate">
-          <div class="scene-stamp"><div class="specimen-title"><span data-scene-kind></span><strong data-active-shape></strong></div>
-            ${intro ? `<div class="plate-actions"><button class="annotation-toggle" type="button" aria-pressed="false">${msg('anatomyNotes')}</button>
-            <div class="section-switch" role="group" data-i18n-label="viewMode">
-              <button type="button" data-structure-view="cut" aria-pressed="false">${msg('sectionView')}</button>
-              <button type="button" data-structure-view="surface" aria-pressed="true">${msg('surfaceView')}</button>
-            </div></div>` : ''}
-          </div>
-          ${intro ? `<span class="anatomy-label label-a" data-anatomy="a"></span><span class="anatomy-label label-b" data-anatomy="b"></span>
-          <button class="rotation-toggle" type="button" aria-pressed="true">${msg('autoRotate')}</button>` : ''}
-          <canvas tabindex="${intro ? 0 : -1}" aria-describedby="${captionId}${intro ? ' organoid-instructions' : ''}"></canvas>
-          ${chapter === 1 ? `<div class="lineage-nodes">${specimens}</div>` : ''}
-        </div></div>
-        ${intro ? `<div class="shape-controls" role="group" data-i18n-label="shapeLabel">${shapes.map(id => `<button data-shape="${id}" type="button">${msg(id==='rosette' ? 'rosetteShort' : id)}</button>`).join('')}</div>` : ''}
-        <p id="${captionId}" class="structure-caption" aria-live="polite"></p>${intro ? `<div class="organoid-toolbar">
-          <p id="organoid-instructions" data-i18n="rotateOrganoid"></p>
-          <button class="organoid-expand" type="button"><span aria-hidden="true">⤢</span>${msg('expandOrganoid')}</button>
-        </div>
-        <dialog class="organoid-dialog" aria-labelledby="organoid-dialog-title">
-          <div class="dialog-top"><h2 id="organoid-dialog-title" data-i18n="organoidConcept"></h2><button class="icon-button" type="button" data-i18n-label="closeOrganoid" autofocus>×</button></div>
-          <div class="organoid-expanded-scene"></div><div class="expanded-reading"></div>
-          <div class="organoid-dialog-controls"><p id="organoid-expanded-instructions" data-i18n="zoomOrganoidHint"></p>
-            <button class="icon-button" type="button" data-viewer-zoom="out" data-i18n-label="zoomOrganoidOut">−</button>
-            <button class="icon-button" type="button" data-viewer-zoom="in" data-i18n-label="zoomOrganoidIn">+</button>
-          </div>
-        </dialog>` : ''}
-      </div>`;
+function chapterFilm(id, duration, caption, cues) {
+  const asset = 'assets/films/' + id + (language === 'en' ? '-en' : '');
+  const intervals = cues.map(([start], i) => {
+    const end = cues[i + 1]?.[0] ?? duration;
+    return 'minmax(30px,' + (end - start).toFixed(2) + 'fr)';
+  });
+  const secondsPart = seconds => String(seconds).replace(/^\d(?=\.|$)/, '0$&');
+  return `<figure class="film-plate">
+    <div class="film-animation-slot" data-animation-slot="${id}">
+      <video controls muted playsinline preload="metadata" width="1280" height="720"
+        data-film="${id}" poster="${asset}.webp" data-i18n-label="${caption}"></video>
+      ${id === 'phenotypes' ? '<span class="docked-specimen" aria-hidden="true"></span>' : ''}
+    </div>
+    <figcaption>
+      <div class="film-timeline" role="group" data-i18n-label="filmSeek" style="grid-template-columns:${intervals.join(' ')}">
+        ${cues.map(([seconds, key]) => `<div class="film-interval"><button type="button" class="film-node" data-time="${seconds}">
+          <span class="film-node-time"><span class="film-minutes">0:</span>${secondsPart(seconds)}</span><span class="film-node-name" data-i18n="${key}">${t(key)}</span>
+        </button></div>`).join('')}
+      </div>
+      <div class="film-clock"><span class="film-key" aria-hidden="true"></span><span class="film-current-name"></span>
+        <span class="film-duration">0:${secondsPart(duration)}</span></div>
+    </figcaption>
+  </figure>`;
 }
 
 function home() {
-  const chapterMark = (index, key) => `<div class="story-kicker"><span>0${index+1} / 03</span>${msg(key)}</div>`;
-  const specimens = Object.keys(lineageCounts).map(lineage => {
-    const sample = samples.find(item => item.lineage === lineage && item.kind === 'real');
-    return `<a class="lineage-node" data-lineage-node="${lineage}" href="#results?tab=atlas&lineage=${lineage}"><img src="${sample.image}" width="64" height="64" alt=""><span>${msg(lineage)} ↗</span></a>`;
-  }).join('');
-  return `<section class="hero"><div class="story-atmosphere" aria-hidden="true"></div>
-    <article class="story-act research-intro" id="home-top" data-chapter="0"><div class="chapter-panel"><div class="chapter-copy">
-      ${chapterMark(0, 'introChapter')}<h1>V3Cell</h1><h2>${msg('homeSubject')}</h2><p>${msg('homeAbstract')}</p>
-      <div class="hero-actions"><a class="btn" href="#home-atlas">${msg('startAtlas')} ↓</a><a class="text-link" href="#research">${msg('studyEvidence')} ↗</a></div>
-    </div>${chapterViewer(0)}</div></article>
-    <article class="story-act" id="home-atlas" data-chapter="1"><div class="chapter-panel"><div class="chapter-copy">
-      ${chapterMark(1, 'lineage')}<h2>${msg('atlasChapter')}</h2><p>${msg('staticAbstract')}</p>
-      <div class="hero-actions"><a class="btn" href="#home-fate">${msg('continueFate')} ↓</a><a class="text-link" href="#results?tab=atlas">${msg('openAtlas')} ↗</a></div>
-    </div>${chapterViewer(1, specimens)}</div></article>
-    <article class="story-act" id="home-fate" data-chapter="2"><div class="chapter-panel"><div class="chapter-copy">
-      ${chapterMark(2, 'amniotic')}<h2>${msg('fateChapter')}</h2><p>${msg('fateAbstract')}</p>
-      <div class="fate-steps" role="group" data-i18n-label="fateSequence">${fateSteps.map((key,i) => `<button type="button" data-fate-step="${i}" aria-pressed="${i === 0}"><span class="phase-dot" aria-hidden="true"></span>${msg(key)}</button>`).join('')}</div>
-      <div class="hero-actions"><a class="btn" href="#workbench?compare">${msg('readFateFigure')} ↗</a><a class="text-link" href="#research">${msg('viewEvidence')} ↓</a></div>
-    </div>${chapterViewer(2)}</div>
-      <div class="fate-stops" aria-hidden="true">${fateSteps.map(() => '<span></span>').join('')}</div>
+  const sectionImage = 'assets/organoid-section.webp';
+  const cultureField = forms => `<div class="culture-field" aria-hidden="true">
+    ${forms.map(form => `<i class="micro-${form}"></i>`).join('')}
+  </div>`;
+  const atlasLinks = Object.keys(lineageCounts).map(lineage =>
+    `<a href="#results?tab=atlas&lineage=${lineage}">${msg(lineage)}</a>`).join('');
+  return `<section class="hero film-home">
+    <article class="film-cover" id="home-top" data-chapter="0" aria-labelledby="film-title">
+      ${cultureField(['budding','section','folded'])}
+      <img class="cover-specimen" src="${sectionImage}" width="1254" height="1254" fetchpriority="high" data-i18n-alt="filmSectionAlt" alt="">
+      <div class="cover-copy">
+        <div class="film-eyeline" lang="en">Virtual 3D Cell</div>
+        <h1 id="film-title">V3Cell</h1>
+        <h2>${msg('filmSubject')}</h2><p>${msg('filmIntro')}</p>
+        <a class="film-scroll" href="#home-atlas"><i aria-hidden="true">↓</i>${msg('filmScroll')}</a>
+      </div>
+      <div class="cover-credit"><span class="film-key"></span>${msg('filmSectionCaption')}</div>
     </article>
+    <article class="film-atlas" id="home-atlas" data-chapter="1" aria-labelledby="film-atlas-title">
+      ${cultureField(['solid','rosette','budding'])}
+      ${chapterFilm('phenotypes',10,'filmStaticCaption',[[0,'filmOpening'],[1.16,'filmSectionField'],
+        [3,'filmMicroscope'],[5.45,'filmGan'],[6,'filmComparison'],[7.7,'filmFidelity']])}
+      <div class="film-reading"><div class="film-eyeline" lang="en">Static phenotypes</div>
+        <h2 id="film-atlas-title">${msg('atlasChapter')}</h2><p>${msg('filmCompare')}</p>
+        <div class="film-samples">
+          <figure class="film-sample real"><img src="assets/stomach-hollow-real-1.png" width="64" height="64" alt=""><figcaption><strong>${msg('filmReal')}</strong><span>${msg('filmObserved')}</span></figcaption></figure>
+          <figure class="film-sample virtual"><img src="assets/stomach-hollow-virtual-1.png" width="64" height="64" alt=""><figcaption><strong>${msg('filmVirtual')}</strong><span>${msg('filmGenerated')}</span></figcaption></figure>
+        </div>
+        <small class="film-source">${msg('filmSampleSource')}</small>
+        <div class="film-lineages">${atlasLinks}</div>
+      </div>
+    </article>
+    <article class="film-fate" id="home-fate" data-chapter="2" aria-labelledby="film-fate-title">
+      ${cultureField(['folded','budding','section'])}
+      <div class="film-reading"><div class="film-eyeline" lang="en">Developmental fates</div>
+        <h2 id="film-fate-title">${msg('fateChapter')}</h2><p>${msg('filmFate')}</p>
+        <a class="film-text-link" href="#workbench?compare">${msg('readFateFigure')}</a></div>
+      ${chapterFilm('fates',18,'filmDynamicCaption',[[0,'filmEarly'],[3.7,'filmEncoding'],[6.9,'filmCandidates'],
+        [10,'filmRanking'],[12.2,'filmHighest'],[14.4,'filmRollout'],[17,'filmFuture']])}
+    </article>
+    <img class="travel-specimen" src="${sectionImage}" width="1254" height="1254" alt="" aria-hidden="true">
   </section>
   <nav class="home-chapters" data-i18n-label="chapterSelect"><span class="home-progress">0%</span>
     ${chapters.map((id,i) => `<a href="#${id}" data-i18n-label="${chapterTitles[i]}">0${i+1}</a>`).join('')}</nav>
@@ -244,6 +256,7 @@ document.querySelector('.language-switch').addEventListener('click', e => {
   language = b.dataset.lang;
   try { localStorage.setItem('v3cell.language',language); } catch { /* Keep the choice for this visit. */ }
   updateLanguage();
+  if (page === 'home') main.querySelector('.film-home')?.dispatchEvent(new Event('filmlanguagechange'));
   // Translated chapters wrap at different heights, particularly on phones.
   if (before && before.top<innerHeight && before.bottom>0 && window.scrollY>0) {
     window.scrollBy({top:chapter.getBoundingClientRect().top-before.top,behavior:'instant'});
