@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f8fb"><title>V3Cell · 交互样例</title>
+<link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="explore-sample.css">
+<script src="data.js" defer></script><script src="structure-model.js" defer></script><script src="explore-sample.js" defer></script>
+</head>
+<body>
+<header><div class="bar">
+<a class="brand" href="#overview"><img src="assets/favicon.svg" width="32" height="32" alt="">V3Cell<span>.</span></a>
+<nav aria-label="本页导航"><a href="#atlas">表型图谱</a><a href="#trajectory">命运轨迹</a></nav>
+<a class="lab" href="index.html#workbench">研究工作台</a>
+</div></header>
+<main>
+<section class="hero" id="overview" aria-labelledby="wordmark">
+<div class="specimen" data-open="false">
+<div class="reticle" aria-hidden="true"></div>
+<canvas id="specimen" role="img" aria-label="类器官概念模型，外部表面"></canvas>
+<h1 id="wordmark">V3Cell</h1>
+<span class="callout" hidden>中央腔隙</span>
+<button type="button" id="cut" aria-pressed="false" aria-controls="specimen"><i aria-hidden="true">＋</i><span>看内部</span></button>
+</div>
+<div class="hero-text"><p class="media-label" id="specimen-caption">类器官形态示意 · 表面</p>
+<h2>从明场图像读懂类器官</h2>
+<p>从单张图像比较表型，从连续影像追踪发育命运。</p>
+<div class="hero-links"><a class="primary" href="#atlas">看表型图谱</a><a href="#trajectory">看命运轨迹</a></div>
+</div></section>
+
+<section class="research" id="atlas" aria-labelledby="atlas-title">
+<div class="section-copy"><p class="eyebrow">静态表型</p><h2 id="atlas-title">同一亚型的真实与虚拟样本，有多相似？</h2>
+<p>选一个谱系和亚型，两排图会一起更新。对照每个独立样本的轮廓、出芽和腔隙。</p>
+<details class="evidence"><summary>看表型分布</summary>
+<figure><img src="assets/quality-umap.png" alt="图 3D 的 UMAP，显示结肠、胃、肺三组真实与虚拟样本"><figcaption>图 3D · 三个谱系的真实与虚拟样本分布</figcaption></figure>
+</details></div>
+<div class="plate"><div class="toolbar"><span class="label">组织谱系</span><div class="switch" id="lineages" role="group" aria-label="组织谱系"></div></div>
+<div class="subtype"><label for="subtype">亚型</label><select id="subtype"></select></div>
+<div id="crops" aria-live="polite"></div><p class="plate-note">图 2 · 单类器官明场 ROI，64 × 64 像素</p></div>
+</section>
+
+<section class="research" id="trajectory" aria-labelledby="fates-title">
+<div class="section-copy"><p class="eyebrow">动态命运</p><h2 id="fates-title">同一时刻，三种结局有什么不同？</h2>
+<p>这里展示独立的羊膜囊类器官研究。拖动培养时间，在同一时刻比较三条虚拟轨迹。</p>
+<details class="evidence"><summary>怎样从早期形态判别命运？</summary><p>分类器读取第 5 帧。时序模型结合前 6 帧和命运条件，推演后续 19 帧。右侧展示论文选取的 7 个时点。</p></details></div>
+<div class="plate"><div class="time-head"><label for="time">培养时间</label><output id="hour" for="time">72 h</output></div>
+<div class="time-control"><button id="prev-hour" type="button" aria-label="前一时点">−</button><div class="range-wrap"><input id="time" type="range" min="0" max="6" step="1" value="3"><div id="ticks" aria-hidden="true"></div></div><button id="next-hour" type="button" aria-label="后一时点">＋</button></div>
+<div class="fates" id="fates"></div>
+<p class="plate-note">图 5A · 虚拟轨迹选帧　/　48–96 小时</p></div></section>
+</main>
+<footer><span>V3Cell</span><a href="index.html#results">研究结果</a><a href="#overview">回到顶部</a></footer>
+</body></html>

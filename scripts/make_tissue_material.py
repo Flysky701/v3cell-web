@@ -188,5 +188,5 @@ def solid():
 surface, lining, normals = skin_and_lining()
 # Heights in units of WIDTH: skin 1/2, wall 1/8, solid 1/2, lining 1/2, normals 1/2.
 atlas = np.concatenate([surface, wall(), solid(), lining, normals]).clip(0,255).astype('uint8')
-dest = Path(__file__).resolve().parents[1]/'dist'/'assets'/'organoid-material.jpg'
-Image.fromarray(atlas).save(dest, quality=92, subsampling=0, optimize=True)
+dest = Path(__file__).resolve().parents[1]/'dist'/'assets'/'organoid-material.webp'
+Image.fromarray(atlas).save(dest, format='WEBP', quality=84, method=6)

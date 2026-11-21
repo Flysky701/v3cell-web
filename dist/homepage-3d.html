@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f9fc">
+  <title>V3Cell · 3D 研究概览</title>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="preview.css">
+  <script defer src="data.js"></script>
+  <script defer src="i18n.js"></script>
+  <script defer src="structure-model.js"></script>
+  <script defer src="preview-art.js"></script>
+  <script defer src="preview.js"></script>
+</head>
+<body>
+<div class="scroll-track"><div class="page">
+  <header class="mast">
+    <a href="index.html#home" class="brand" aria-label="V3Cell 首页"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><ellipse cx="20" cy="20" rx="17" ry="11" transform="rotate(-38 20 20)"/><ellipse cx="20" cy="20" rx="10" ry="16" transform="rotate(-38 20 20)"/><circle cx="20" cy="20" r="3.5" fill="currentColor"/></svg><span>V3Cell<i>.</i></span></a>
+    <nav class="chapters" aria-label="章节"></nav>
+    <span class="edition">3D</span>
+    <button class="lang" type="button" aria-label="Switch to English">EN</button>
+  </header>
+  <main>
+    
+    <section class="stage" aria-labelledby="scene-title">
+      <div class="plate-heading"><span class="index"></span><span class="folio" lang="en"></span></div>
+      <canvas id="plate" role="img"></canvas>
+      <div class="scene-heading"><h1 id="scene-title"></h1><p class="scene-sub"></p></div>
+      <div class="intro-copy"><h2></h2><p></p><div class="metrics"></div></div>
+      <a class="evidence" href="index.html#results"><img alt="" width="40" height="40"><span></span></a>
+      <div class="stage-credit"></div>
+      <div class="stage-actions"></div>
+    </section>
+    <section class="caption" aria-live="polite" aria-atomic="true"><div class="caption-name"><span class="node-index"></span><h2></h2></div><p></p></section>
+  </main>
+  <footer class="controls">
+    <input class="scrubber" type="range" min="0" max="8500" step="1" value="0" aria-label="动画进度">
+    <nav class="stops" aria-label="本幕节点"></nav>
+    <div class="transport">
+      <button type="button" id="play"><span class="play-icon" aria-hidden="true">▷</span><span class="play-label"></span></button>
+      <button type="button" id="prev" class="arrow">←</button>
+      <button type="button" id="next" class="arrow">→</button>
+    </div>
+  </footer>
+</div></div>
+<noscript>请启用 JavaScript 查看分镜，或<a href="index.html">返回首页</a>。</noscript>
+</body></html>

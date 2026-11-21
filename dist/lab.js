@@ -42,9 +42,9 @@ function phaseReading(id,hour) {
 function trajectoryCurves(id) {
   const f = study.dynamic.fates[id];
   return `<article class="curve-set"><h3>${t(id)}</h3>${compareFates ? '<p class="phase-reading"></p>' : ''}<div class="curve-pair">${[
-    ['probability',t('probability'),f.probability,'5C'],['morphometry',t(f.metric),f.morphometry,'5G']
-  ].map(([kind,name,r,panel]) => `<figure><figcaption><span>${name}</span><strong>r = ${r.toFixed(3)}</strong></figcaption>
-    <div class="curve-image ${kind}"><img src="assets/${kind}-${id}.png" alt="${t(id)} · ${name} · Fig. ${panel}"><i aria-hidden="true"></i></div></figure>`).join('')}</div></article>`;
+    ['probability',t('probability'),f.probability,'5C',572,420],['morphometry',t(f.metric),f.morphometry,'5G',540,508]
+  ].map(([kind,name,r,panel,w,h]) => `<figure><figcaption><span>${name}</span><strong>r = ${r.toFixed(3)}</strong></figcaption>
+    <div class="curve-image ${kind}"><img loading="lazy" width="${w}" height="${h}" src="assets/${kind}-${id}.png" alt="${t(id)} · ${name} · Fig. ${panel}"><i aria-hidden="true"></i></div></figure>`).join('')}</div></article>`;
 }
 
 function updateLinkedEvidence() {
@@ -73,9 +73,9 @@ function renderAttribution() {
     <h2>${bi('Grad-CAM 空间归因与免疫荧光验证','Grad-CAM spatial attribution & immunofluorescence validation')}</h2>
     <p>${bi('为检验驱动 V3Cell 命运编码的区域是否对应具有生物学意义的解剖结构，我们对比了三种化学扰动（EHDPP、IDDPP、RGD）下的明场图、腔体形成 logit 的 Grad-CAM 激活图，以及肌动球蛋白收缩力标志物 p-MLC-II 与细胞核 DAPI 染色。','To test whether the regions driving V3Cell’s fate encoding correspond to biologically meaningful structures, we compared brightfield frames, Grad-CAM activation maps for the cavity-formation logit, and endpoint immunofluorescence for actomyosin contractility (p-MLC-II) and nuclei (DAPI) across EHDPP, IDDPP, and RGD perturbations.')}</p></div>
     ${choiceButtons('condition',Object.entries(a.conditions).map(([id,dose])=>[id,id.toUpperCase()+' · '+dose+' μM']),condition)}
-    <div class="channel-grid">${a.channels.map(ch => `<figure><button data-channel="${ch}" aria-label="${title} · ${t(ch)}"><img src="assets/attribution-${condition}-${ch}.png" alt="${title} · ${t(ch)}"></button><figcaption>${t(ch)}</figcaption></figure>`).join('')}</div>
+    <div class="channel-grid">${a.channels.map(ch => `<figure><button data-channel="${ch}" aria-label="${title} · ${t(ch)}"><img loading="lazy" width="119" height="119" src="assets/attribution-${condition}-${ch}.png" alt="${title} · ${t(ch)}"></button><figcaption>${t(ch)}</figcaption></figure>`).join('')}</div>
     <p class="lab-note">${bi('模型高关注的上皮环区域与 p-MLC-II 免疫荧光在空间上高度吻合，且在 EHDPP、IDDPP 与 RGD 三种扰动条件下保持一致，表明模型归因能够跨扰动泛化并定位于力学活跃的上皮区域。免疫荧光图像取自匹配或同条件代表性视野，Grad-CAM 由冻结编码器上的线性探针提取。','The attended epithelial ring spatially coincides with p-MLC-II immunofluorescence across EHDPP, IDDPP, and RGD conditions, demonstrating that model attribution localizes to mechanically active epithelial regions in a perturbation-generalizable manner. IF panels show matched or representative fields; Grad-CAM is computed via a linear probe on the frozen encoder.')}</p>
-    <div class="dimension-card"><button class="panel-image" data-figure="trajectories" aria-label="${t('openFigure')}"><img src="assets/attribution-nef.png" alt="Fig. 5F · nEF"></button>
+    <div class="dimension-card"><button class="panel-image" data-figure="trajectories" aria-label="${t('openFigure')}"><img loading="lazy" width="612" height="508" src="assets/attribution-nef.png" alt="Fig. 5F · nEF"></button>
     <div><span class="section-ref">Fig. 5F · §4.7–4.8</span><h3>${bi('区域归一化能量占比（nEF）','Normalized Energy Fraction (nEF)')}</h3><p>${bi('我们定义了区域归一化能量占比（nEF）以量化归因偏好：水平虚线 nEF = 1 代表空间均匀基线（激活能量与区域面积成正比），大于 1 表示归因富集，小于 1 表示相对抑制。统计时先在每条视频内对帧取均值，再以视频为单位执行双侧 Wilcoxon 符号秩检验。','We defined the Normalized Energy Fraction (nEF) to quantify regional attribution preference: the dashed line at nEF = 1 marks the spatially uniform baseline (activation proportional to region area), with nEF > 1 indicating enrichment and nEF < 1 indicating suppression. Frame values were averaged within each video before Wilcoxon signed-rank testing.')}</p><p>${attributionNote()}</p></div></div>
     ${resultDrawer(bi('查看 51 条归因分析视频的样本构成','View composition of the 51-video attribution subset'),valueTable([bi('视频子集来源','Video subset source'),bi('视频序列数','Video sequences')],[[bi('EHDPP 训练集','EHDPP training'),a.trainingEhdpp],[bi('EHDPP 留出测试集','EHDPP held-out'),a.heldOutEhdpp],['IDDPP',a.iddpp],['RGD',a.rgd]])+
       `<p>${bi('归因定量分析涵盖发生腔体形成或呈现形成趋势的 51 条延时视频序列；其中 IDDPP 与 RGD 扰动组专门留作跨条件归因验证。','Quantitative attribution covers 51 time-lapse sequences exhibiting cavity formation or a cavity-forming tendency, with the IDDPP and RGD perturbation cohorts reserved specifically for cross-condition attribution validation.')}</p>`)}

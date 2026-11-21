@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f2f7f6"><title>V3Cell · 2D 动画图解</title>
+<link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="homepage-2d.css">
+<script defer src="data.js"></script><script defer src="i18n.js"></script><script defer src="preview-art.js"></script><script defer src="homepage-2d.js"></script>
+</head>
+<body>
+<header class="mast"><a class="brand" href="index.html#home">V3Cell<span>.</span></a>
+<nav aria-label="章节"><a href="#intro" data-text="nav0">截面</a><a href="#static" data-text="nav1">表型</a><a href="#fates" data-text="nav2">命运</a></nav>
+<button id="lang" type="button">EN</button></header>
+<main>
+<section class="spread cover" id="intro" aria-labelledby="cover-title">
+<div class="editorial">
+<div class="kicker">V3CELL <i></i> SECTIONAL ATLAS</div>
+<h1 id="cover-title" data-text="title">明场里的<br>类器官</h1>
+<p class="deck" data-text="lead">一张图像，辨识表型。<br>一段序列，追踪发育命运。</p>
+<div class="stats"><div><strong data-total>7,749</strong><small data-text="roi">静态 ROI</small></div><div><strong data-classes>9</strong><small data-text="classes">类表型</small></div><div><strong data-fates>3</strong><small data-text="fates">种命运</small></div></div>
+<button id="read-all" type="button"><span aria-hidden="true">▶</span> <b data-text="playAll">连播三幕</b></button>
+</div>
+<figure class="illustration"><div class="plate"><canvas role="img"></canvas></div>
+<figcaption><div class="plate-title"><span>01 / 03</span><b data-text="fig0">从明场到截面</b></div><p data-step></p></figcaption>
+<div class="playbar"><button type="button" data-play></button><input type="range" min="0" max="1000" value="0"><output></output></div></figure>
+</section>
+<section class="spread" id="static" aria-labelledby="static-title"><div class="editorial">
+<div class="kicker">02 <i></i> STATIC PHENOTYPES</div>
+<h2 id="static-title" data-text="staticTitle">两条路径，<br>同一表型空间</h2>
+<p data-text="staticLead">显微镜记录真实类器官，模型按亚型生成虚拟样本。沿着两条路径，看结肠、胃与肺的形态如何在表型空间汇合。</p>
+<a class="source" href="index.html#results?tab=atlas"><img src="assets/stomach-hollow-real-1.png" alt=""><span data-text="fig2">图 2 · 真实与虚拟 ROI</span></a>
+<a class="text-link" href="index.html#results?tab=quality" data-text="umap">查看图 3 的实测 UMAP</a>
+</div><figure class="illustration"><div class="plate"><canvas role="img"></canvas></div>
+<figcaption><div class="plate-title"><span>02 / 03</span><b data-text="fig1">观测与生成</b></div><p data-step></p></figcaption>
+<div class="playbar"><button type="button" data-play></button><input type="range" min="0" max="1000" value="0"><output></output></div></figure></section>
+<section class="spread" id="fates" aria-labelledby="fates-title"><div class="editorial">
+<div class="kicker">03 <i></i> DEVELOPMENTAL FATES</div>
+<h2 id="fates-title" data-text="fatesTitle">一个起点，<br>三种可能的命运</h2>
+<p data-text="fatesLead">独立的羊膜囊类器官研究以六帧早期形态为输入，在命运条件下推演后续十九帧。分支展示三种可能，每个真实样本只经历一种结局。</p>
+<a class="source" href="index.html#results?tab=temporal"><img src="assets/trajectory-formation-6.png" alt=""><span data-text="fig5">图 5A · 虚拟轨迹末帧</span></a>
+<a class="text-link" href="index.html#workbench?tab=local" data-text="bench">进入时序工作台</a>
+</div><figure class="illustration"><div class="plate"><canvas role="img"></canvas></div>
+<figcaption><div class="plate-title"><span>03 / 03</span><b data-text="fig3">命运条件推演</b></div><p data-step></p></figcaption>
+<div class="playbar"><button type="button" data-play></button><input type="range" min="0" max="1000" value="0"><output></output></div></figure></section>
+</main><footer><a class="brand" href="index.html#home">V3Cell<span>.</span></a><span data-text="credit">2D 形态与曲线为概念示意</span><a href="#intro" data-text="top">回到开头 ↑</a></footer>
+</body></html>

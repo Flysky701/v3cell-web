@@ -35,7 +35,7 @@ function sampleGroup(subtype) {
   const group = samples.filter(s => s.subtype === subtype);
   return `<article class="sample-group"><h3>${t(subtype)}</h3><span class="specimen-lineage">${t(group[0].lineage)}</span>
     ${['real','virtual'].map(kind => `<div class="sample-row" data-kind="${kind}"><span>${t(kind)}</span>${group.filter(s => s.kind === kind).map((s,i) =>
-      `<button data-sample="${s.id}" aria-label="${t(s.lineage)} · ${t(subtype)} · ${t(kind)} ${i+1}"><img loading="lazy" src="${s.image}" alt=""></button>`).join('')}</div>`).join('')}</article>`;
+      `<button data-sample="${s.id}" aria-label="${t(s.lineage)} · ${t(subtype)} · ${t(kind)} ${i+1}"><img loading="lazy" width="64" height="64" src="${s.image}" alt=""></button>`).join('')}</div>`).join('')}</article>`;
 }
 
 function atlasPanel() {
@@ -56,7 +56,7 @@ function showSample(id) {
   openInspection(title,`<div class="roi-comparison">${['real','virtual'].map(kind => {
     const items = group.filter(s => s.kind === kind);
     const initial = items[ordinal-1];
-    return `<figure><figcaption>${t(kind+'SampleShort')}</figcaption><img src="${initial.image}" alt="${t(kind)} · ${title}"><div class="choice-row">${items.map((s,i) => `<button data-magnify="${s.image}" class="chip" aria-label="${t(kind)} ${i+1}" aria-pressed="${s === initial}">${i+1}</button>`).join('')}</div></figure>`;
+    return `<figure><figcaption>${t(kind+'SampleShort')}</figcaption><img width="64" height="64" src="${initial.image}" alt="${t(kind)} · ${title}"><div class="choice-row">${items.map((s,i) => `<button data-magnify="${s.image}" class="chip" aria-label="${t(kind)} ${i+1}" aria-pressed="${s === initial}">${i+1}</button>`).join('')}</div></figure>`;
   }).join('')}</div><p>${t('atlasNotice')}</p>`);
 }
 
@@ -68,7 +68,9 @@ function qualityPanel() {
     morphometry: ['3E–F',bi('谱系特异发育标志','Lineage-specific developmental hallmarks'),bi('为验证生物学层面的结构保真度，我们定量比对了各谱系的关键发育标志：结肠出芽不透明亚型的出芽数（隐窝形成的涌现特征）及胃凋亡亚型的椭圆度与真实分布均无显著差异，仅面向类器官前景的训练策略有效保留了主体几何特征；肺有腔亚型的腔面面积与真实观测高度一致，残差在效应量上可忽略（p = 0.033，d = −0.27 ± 0.05）。','To verify biological fidelity at the ROI level, we evaluated lineage-specific developmental hallmarks: colon budding opaque organoids reproduced the real bud-number distribution (an emergent hallmark of crypt formation) with no significant difference, stomach apoptotic organoids matched real ellipticity distributions, and lung lumen organoids closely aligned in lumen area with only a negligible residual effect size (p = 0.033, d = −0.27 ± 0.05).')],
     umap: ['3D','UMAP',bi('我们将类器官特异编码器提取的高维特征向量投影至统一的 UMAP 表型空间。在全部三种谱系中，V3Cell 构建的虚拟 3D 细胞群体均嵌入并与对应真实样本流形广泛重叠，覆盖了完整的真实表型流形且未见明显模式坍塌（mode collapse）。','We projected high-dimensional feature vectors from our organoid-specific encoder into a unified UMAP phenotypic landscape. Across all three lineages, V3Cell-constructed virtual 3D cell populations were embedded within and overlapped extensively with their real counterparts, demonstrating broad coverage of the real phenotypic manifold without gross mode collapse.')]
   };
+  const qualitySizes = {distribution:[1408,478], texture:[1414,404], morphometry:[1868,340], umap:[430,404]};
   const [panel,title,detail] = dimensions[qualityMode];
+  const [qw, qh] = qualitySizes[qualityMode];
   const rows = [
     [bi('结肠数据集 KID','Colon dataset KID'),f.colonKid],
     [bi('三谱系相对最优基线的最大 KID 降幅','Max KID reduction vs. best baseline across lineages'),'2.7×'],
@@ -80,7 +82,7 @@ function qualityPanel() {
     [t('stomach')+' · '+t('ellipticity'),bi('与真实分布无显著差异（ns）','No significant difference vs. real (ns)')]
   ];
   return `${choiceButtons('quality-mode',Object.keys(dimensions).map(id => [id,t(id)]),qualityMode)}
-    <div class="dimension-card"><button class="panel-image" data-figure="quality" aria-label="${t('openFigure')}"><img src="assets/quality-${qualityMode}.png" alt="${title} · Fig. ${panel}"></button><div><span class="section-ref">Fig. ${panel}</span><h3>${title}</h3><p>${detail}</p></div></div>
+    <div class="dimension-card"><button class="panel-image" data-figure="quality" aria-label="${t('openFigure')}"><img loading="lazy" width="${qw}" height="${qh}" src="assets/quality-${qualityMode}.png" alt="${title} · Fig. ${panel}"></button><div><span class="section-ref">Fig. ${panel}</span><h3>${title}</h3><p>${detail}</p></div></div>
     ${resultDrawer(bi('展开定量评估指标与效应量汇总','View quantitative metrics & effect sizes'),valueTable([bi('评估维度','Evaluation metric'),bi('实验结果','Result')],rows))}
     ${sourcePages('§2.2 · Fig. 3',[5,6,7],'quality')}`;
 }
@@ -185,7 +187,7 @@ function handleEvidenceClick(target) {
   if (d.sample) { showSample(d.sample); return true; }
   if (d.sourcePage) {
     const title = bi('手稿原页 · 第 '+d.sourcePage+' 页','Manuscript · page '+d.sourcePage);
-    openInspection(title,`<img class="source-page" src="assets/source-p${d.sourcePage}.png" alt="${title}">`);
+    openInspection(title,`<img class="source-page" width="1191" height="1684" src="assets/source-p${d.sourcePage}.png" alt="${title}">`);
     return true;
   }
   if (button.id === 'solo-result') { singleResult = !singleResult; applyResultSelection(); document.getElementById('result-'+focusedResult).scrollIntoView(); return true; }

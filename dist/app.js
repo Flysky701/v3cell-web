@@ -6,10 +6,8 @@ const resultTabs = ['atlas', 'quality', 'phenotyping', 'temporal'];
 const fateIds = Object.keys(study.dynamic.fates);
 const trajectoryHours = study.dynamic.hours;
 const lastFrame = trajectoryHours.length - 1;
-const shapes = ['spheroid', 'budding', 'rosette', 'collapsed'];
 const chapters = ['home-top', 'home-atlas', 'home-fate'];
 const chapterTitles = ['introChapter', 'atlasChapter', 'fateChapter'];
-const fateSteps = ['beforePerturbation', 'afterPerturbation', 'stateEvolution'];
 let samples = [], selectedLineage = 'all', fate = 'formation', frame = 0;
 let compareFates = false, timer = null, fileUrls = [], uploadTotal = 0, page = 'home';
 let disposeHomeStory, resultNavObserver;
@@ -18,11 +16,11 @@ const msg = key => `<span data-i18n="${key}">${t(key)}</span>`;
 const eye = key => `<div class="eyebrow"><span class="dot"></span>${msg(key)}</div>`;
 const frameImage = (key, index) => `assets/trajectory-${key}-${index}.png`;
 const figureData = {
-  framework: ['frameworkTitle', 'frameworkCaption'],
-  'static-comparison': ['staticTitle', 'staticCaption'],
-  quality: ['qualityTitle', 'qualityCaption'],
-  phenotyping: ['classificationTitle', 'classificationCaption'],
-  trajectories: ['trajectoryTitle', 'trajectoryCaption']
+  framework: ['frameworkTitle', 'frameworkCaption', 951, 441],
+  'static-comparison': ['staticTitle', 'staticCaption', 930, 746],
+  quality: ['qualityTitle', 'qualityCaption', 943, 616],
+  phenotyping: ['classificationTitle', 'classificationCaption', 943, 483],
+  trajectories: ['trajectoryTitle', 'trajectoryCaption', 930, 1013]
 };
 
 
@@ -36,7 +34,7 @@ function chapterFilm(id, duration, caption, cues) {
   return `<figure class="film-plate">
     <div class="film-animation-slot" data-animation-slot="${id}">
       <video controls muted playsinline preload="metadata" width="1280" height="720"
-        data-film="${id}" poster="${asset}.webp" data-i18n-label="${caption}"></video>
+        data-film="${id}" data-duration="${duration}" poster="${asset}.webp" data-i18n-label="${caption}"></video>
       ${id === 'phenotypes' ? '<span class="docked-specimen" aria-hidden="true"></span>' : ''}
     </div>
     <figcaption>
@@ -111,16 +109,16 @@ function trajectoryWorkspace() {
     <p class="aside-note" data-i18n="previewPrivacy"></p><div id="upload-preview" class="upload-preview"></div><p id="upload-status" class="upload-status" role="status"></p>
     <button class="btn secondary" id="reset-workbench">${msg('reset')} ↺</button></aside>
     <div class="lab-main"><div class="lab-toolbar"><h2 data-i18n="explorer"></h2><button id="compare-fates" class="chip" type="button" aria-controls="single-trajectory compared-trajectories" data-i18n="compareTrajectories"></button></div>
-      <div id="single-trajectory" class="preview-stage"><div class="microscope"><span class="corner-label" data-i18n="virtualFig"></span><img id="main-frame" src="${frameImage(fate,frame)}" alt=""><span id="frame-time" class="frame-time"></span></div>
+      <div id="single-trajectory" class="preview-stage"><div class="microscope"><span class="corner-label" data-i18n="virtualFig"></span><img id="main-frame" src="${frameImage(fate,frame)}" width="256" height="256" alt=""><span id="frame-time" class="frame-time"></span></div>
       <div class="frame-details"><div class="eyebrow" data-i18n="developmentalFate"></div><h3 id="fate-title"></h3><p id="fate-description"></p>
         <div class="detail-list"><div><span>${msg('probability')} · r</span><b id="current-probability"></b></div><div><span id="current-metric"></span><b id="current-morphometry"></b></div><div>${msg('modality')}<b data-i18n="brightfield"></b></div><div>${msg('imageSource')}<b data-i18n="manuscriptSample"></b></div><div>${msg('timePoint')}<b id="frame-count"></b></div></div>
       </div></div>
       <section id="compared-trajectories" class="comparison-stage" data-i18n-label="compareTrajectories" hidden>
         <div class="comparison-caption"><span data-i18n="sharedTime"></span><span data-i18n="virtualFig"></span></div>
-        <div class="comparison-grid">${fateIds.map(id => `<figure><img data-compare-fate="${id}" alt=""><figcaption data-i18n="${id}"></figcaption></figure>`).join('')}</div>
+        <div class="comparison-grid">${fateIds.map(id => `<figure><img data-compare-fate="${id}" width="256" height="256" alt=""><figcaption data-i18n="${id}"></figcaption></figure>`).join('')}</div>
       </section>
       <div class="window-band"><span>${bi("早期条件输入","Early conditioning")} · K = 6</span><span>${bi("自回归轨迹推演","Autoregressive rollout")} · 19</span></div><div class="timeline-control"><button id="play" class="icon-button">▶</button><label for="time-slider" class="sr-only" data-i18n="cultureTime"></label><input type="range" id="time-slider" min="0" max="${lastFrame}" step="1" value="${frame}"><output id="time-output" for="time-slider"></output></div>
-      <div class="frame-strip">${trajectoryHours.map((hour,i) => `<button class="frame-button" data-frame="${i}"><img src="${frameImage(fate,i)}" alt=""><span>${hour} h</span></button>`).join('')}</div>
+      <div class="frame-strip">${trajectoryHours.map((hour,i) => `<button class="frame-button" data-frame="${i}"><img src="${frameImage(fate,i)}" width="64" height="64" alt=""><span>${hour} h</span></button>`).join('')}</div>
       <div id="linked-evidence"></div><div class="lab-bottom"><p data-i18n="replayNote"></p><button id="export-selection">${msg('exportRecord')} ↓</button></div>
     </div></div>`;
 }
@@ -232,7 +230,6 @@ const homeTextObserver = new IntersectionObserver(entries => {
 
 function observeHomeText() {
   const textBlocks = main.querySelectorAll([
-    '.chapter-copy > :is(.story-kicker, h1, h2, p, .hero-actions, .fate-steps)',
     '#research :is(.eyebrow, h2, h3, .paper-label, .provenance)',
     '.kpi-grid article', '.research-branches p', '.research-source .paper p'
   ].join(', '));
@@ -268,9 +265,15 @@ function route() {
   const path = requestedPath === 'home-background' ? 'home-top' : requestedPath === 'home-method' ? 'home-fate' : requestedPath;
   if (path === 'main') { main.focus(); return; }
   const anchor = [...chapters, 'research'].includes(path);
-  if (anchor && page === 'home' && document.getElementById(path)) {
-    document.getElementById(path).scrollIntoView();
-    return;
+  if (page === 'home' && main.querySelector('.film-home')) {
+    if (path === 'home') {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+      return;
+    }
+    if (anchor && document.getElementById(path)) {
+      document.getElementById(path).scrollIntoView();
+      return;
+    }
   }
   clearToast();
   const previousPage = page;
@@ -292,7 +295,7 @@ function route() {
   }
   if (page === 'workbench') {
     labTab = labModes.includes(tab) ? tab : 'dynamics';
-    if (params.has('compare')) compareFates = true;
+    compareFates = params.has('compare');
   }
   main.innerHTML = page === 'results' ? results() : page === 'workbench' ? workbench() : home();
   document.querySelectorAll('[data-nav]').forEach(a => {
@@ -363,13 +366,21 @@ main.addEventListener('click', e => {
   if (handleEvidenceClick(e.target) || handleLabClick(e.target)) return;
   const fb = e.target.closest('[data-frame]');
   if (fb) { stopPlayback(); frame = Number(fb.dataset.frame); updateFrame(); }
-  if (e.target.closest('#compare-fates')) { compareFates = !compareFates; updateFrame(); }
+  if (e.target.closest('#compare-fates')) {
+    compareFates = !compareFates;
+    const nextHash = compareFates ? '#workbench?compare' : '#workbench';
+    if (location.hash !== nextHash) history.replaceState(null, '', nextHash);
+    updateFrame();
+  }
   const figure = e.target.closest('[data-figure]');
   if (figure) {
     const id = figure.dataset.figure;
-    const [title,caption] = figureData[id];
+    const [title, caption, width, height] = figureData[id];
     const image = document.querySelector('#figure-image');
-    image.src = 'assets/'+id+'.png';
+    image.removeAttribute('src');
+    image.width = width;
+    image.height = height;
+    image.src = 'assets/' + id + '.png';
     image.dataset.i18nAlt = title;
     document.querySelector('#figure-title').dataset.i18n = title;
     document.querySelector('#figure-caption').dataset.i18n = caption;
@@ -387,6 +398,7 @@ main.addEventListener('click', e => {
   }
   if (e.target.closest('#reset-workbench')) {
     stopPlayback(); clearUploads(); fate = 'formation'; frame = 0; compareFates = false;
+    if (location.hash === '#workbench?compare') history.replaceState(null, '', '#workbench');
     renderLab(); showToast('resetDone');
   }
   if (e.target.closest('#export-selection')) {

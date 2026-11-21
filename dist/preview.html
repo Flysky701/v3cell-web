@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><title>V3Cell · 首页预览</title>
+<script>
+const target = new URLSearchParams(location.search).get('view') === '3d' ? 'homepage-3d.html' : 'homepage-2d.html';
+const sections={portal:'intro',section:'static',observe:'static',generate:'static',embedding:'static',loop:'static',early:'fates',perturb:'fates',branch:'fates',rollout:'fates',outcomes:'fates'};
+const fragment=location.hash.slice(1);
+location.replace(target+(target==='homepage-2d.html' && fragment?'#'+(sections[fragment]||fragment):location.hash));
+</script>
+<p><a href="homepage-3d.html">3D 首页</a> · <a href="homepage-2d.html">2D 动画首页</a></p></html>

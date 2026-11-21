@@ -9,6 +9,7 @@ import secrets
 import sys
 import threading
 import traceback
+import warnings
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -26,9 +27,13 @@ PROTOCOL = "v3cell-trajectory/1"
 
 
 def verified_weights(directory):
+    print("Verifying Zenodo weights (1.07 GB)...", flush=True)
     for name, expected in WEIGHTS.items():
+        path = directory / name
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing weight file: {path}")
         digest = hashlib.md5()
-        with (directory / name).open("rb") as stream:
+        with path.open("rb") as stream:
             for chunk in iter(lambda: stream.read(2**20), b""):
                 digest.update(chunk)
         if digest.hexdigest() != expected:
@@ -58,29 +63,60 @@ def unpack_frames(payload, folder):
         (folder / f"{i:02}.png").write_bytes(data)
 
 
+def encode_gif(video, fps=10):
+    import numpy as np
+    from PIL import Image
+
+    arr = video.detach().cpu().float().numpy()
+    if arr.ndim == 4 and arr.shape[1] in (1, 3):
+        arr = np.transpose(arr, (0, 2, 3, 1))
+    if arr.min() < 0:
+        arr = (arr + 1.0) * 0.5
+    arr = (arr * 255.0).clip(0, 255).astype(np.uint8)
+    if arr.shape[-1] == 1:
+        arr = np.repeat(arr, 3, axis=-1)
+    pil_frames = [Image.fromarray(frame) for frame in arr]
+    buffer = io.BytesIO()
+    pil_frames[0].save(
+        buffer,
+        format="GIF",
+        save_all=True,
+        append_images=pil_frames[1:],
+        duration=1000 // fps,
+        loop=0,
+        optimize=True,
+    )
+    return buffer.getvalue()
+
+
 def load_predictor(source, weights, device_name):
+    warnings.filterwarnings("ignore", message=".*weights_only.*", category=FutureWarning)
     import torch
 
     verified_weights(weights)
+    resolved = ("cuda" if torch.cuda.is_available() else "cpu") if device_name == "auto" else device_name
+    device = torch.device(resolved)
+    label = torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
+    print(f"Loading V3Cell model on {label}...", flush=True)
+
     sys.path.insert(0, str(source.resolve()))
     from scripts.inference import get_class_label, inference_single_video, load_model, load_video_frames
-    from utils.misc import save_video_as_gif
 
-    device = torch.device(device_name)
     decoder, motion = (str(weights / name) for name in WEIGHTS)
     model = load_model(motion, decoder, device)
 
     def predict(folder, condition, seed):
         frames, _ = load_video_frames(folder)
         torch.manual_seed(seed)
-        _, video = inference_single_video(model, frames, get_class_label(condition), 6, 25, device)
+        if device.type == "cuda":
+            torch.cuda.manual_seed_all(seed)
+        with torch.inference_mode():
+            _, video = inference_single_video(model, frames, get_class_label(condition), 6, 25, device)
         if tuple(video.shape) != (25, 3, 256, 256) or not torch.isfinite(video).all().item():
             raise RuntimeError("Invalid model output.")
-        output = folder / "trajectory.gif"
-        save_video_as_gif(video.float(), output)
-        return output.read_bytes()
+        return encode_gif(video)
 
-    return predict, torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
+    return predict, label
 
 
 class Runner(BaseHTTPRequestHandler):
@@ -167,19 +203,29 @@ class Runner(BaseHTTPRequestHandler):
             pass
         except Exception:
             traceback.print_exc()
-            self.reply(500, {"error": "Local inference failed. Check the runner console."})
+            try:
+                self.reply(500, {"error": "Local inference failed. Check the runner console."})
+            except (ConnectionError, TimeoutError):
+                pass
         finally:
             self.server.busy.release()
+
+
+def normalize_origin(origin):
+    parts = urlsplit(origin)
+    if parts.path == "/" and not parts.query and not parts.fragment and origin.endswith("/"):
+        return origin[:-1]
+    return origin
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path, help="Author's V3Cell source checkout")
     parser.add_argument("--weights", required=True, type=Path, help="Directory with both Zenodo weights")
-    parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
+    parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     parser.add_argument("--origin", action="append", help="Exact origin of the workbench")
     args = parser.parse_args()
-    origins = args.origin or ["http://127.0.0.1:3000", "http://localhost:3000"]
+    origins = [normalize_origin(o) for o in (args.origin or ["http://127.0.0.1:3000", "http://localhost:3000"])]
     for origin in origins:
         parts = urlsplit(origin)
         if parts.scheme not in ("http", "https") or not parts.hostname or parts.username or (
